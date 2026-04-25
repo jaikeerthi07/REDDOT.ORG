@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-primary: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier Prime', 'IBM Plex Mono', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F5F4F0;
+  color: #111;
+  font-family: var(--font-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Glitch Animation */
+@keyframes glitch-shift {
+  0%, 100% { transform: translate(0); }
+  33% { transform: translate(-2px, 2px); }
+  66% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-opacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.glitch-layer {
+  animation: glitch-shift 5s infinite ease-in-out, glitch-opacity 3s infinite ease-in-out;
+}
+
+/* Word reveal */
+@keyframes word-reveal {
+  0% { opacity: 0; filter: blur(24px); transform: translateY(24px); }
+  60% { filter: blur(3px); opacity: 0.85; }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0px); }
+}
+
+.word-reveal {
+  opacity: 0;
+  animation: word-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(157, 80, 187, 0.2);
+}
+
+/* Parallax helper */
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Performance Optimizations */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+#home, .parallax-section {
+  content-visibility: visible; /* Hero always visible */
+}
+
+/* Optimize Parallax */
+.zoom-layer-1 { animation: zoomOut1 4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.zoom-layer-2 { animation: zoomOut2 5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.zoom-layer-starship { animation: zoomOutStarship 6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.zoom-layer-text { animation: zoomOutText 4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.zoom-layer-1, .zoom-layer-2, .zoom-layer-3, .zoom-layer-starship, .zoom-layer-text {
+  will-change: transform, scale, opacity, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+
+@keyframes zoomOut1 {
+  0% { scale: 1.3; }
+  100% { scale: 1; }
+}
+
+@keyframes zoomOutStarship {
+  0% { scale: 1.5; }
+  100% { scale: 0.75; }
+}
+
+@keyframes zoomOut2 {
+  0% { scale: 2.5; filter: blur(20px); }
+  50% { filter: blur(10px); }
+  100% { scale: 1; filter: blur(0px); }
+}
+
+@keyframes zoomOut3 {
+  0% { scale: 8; filter: blur(40px); opacity: 0; }
+  30% { filter: blur(25px); opacity: 0.3; }
+  70% { filter: blur(10px); opacity: 0.7; }
+  100% { scale: 1; filter: blur(0px); opacity: 1; }
+}
+
+@keyframes zoomOutText {
+  0% { scale: 3.5; opacity: 0; }
+  40% { opacity: 0.3; }
+  70% { opacity: 0.7; }
+  100% { scale: 1; opacity: 1; }
+}
+
+.letter-rotate {
+  animation: rotateText 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes rotateText {
+  0% { transform: rotateY(90deg); filter: blur(30px); opacity: 0; }
+  40% { filter: blur(15px); opacity: 0.5; }
+  70% { filter: blur(5px); opacity: 0.8; }
+  100% { transform: rotateY(0deg); filter: blur(0px); opacity: 1; }
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Jellyfish Animations */
+@keyframes bellPulse {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  35% { transform: scaleX(1.12) scaleY(0.82); }
+  50% { transform: scaleX(1.15) scaleY(0.78); }
+  65% { transform: scaleX(1.08) scaleY(0.88); }
+}
+@keyframes tentacleWave {
+  0%, 100% { transform: translateX(0) skewX(0deg); }
+  25% { transform: translateX(-5px) skewX(-3deg); }
+  50% { transform: translateX(5px) skewX(3deg); }
+  75% { transform: translateX(-3px) skewX(-2deg); }
+}
+@keyframes oralArmSway {
+  0%, 100% { transform: translateX(0) skewX(0deg); }
+  33% { transform: translateX(3px) skewX(2deg); }
+  66% { transform: translateX(-3px) skewX(-2deg); }
+}
+@keyframes organPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+@keyframes bioGlow {
+  0%, 100% { filter: drop-shadow(0 0 15px rgba(100, 180, 255, 0.4)) drop-shadow(0 0 30px rgba(80, 150, 220, 0.2)); }
+  50% { filter: drop-shadow(0 0 25px rgba(120, 200, 255, 0.6)) drop-shadow(0 0 50px rgba(100, 180, 255, 0.3)); }
+}
+@keyframes particleFloatUp {
+  0% { transform: translateY(100%) scale(0); opacity: 0; }
+  10% { opacity: 1; transform: translateY(90%) scale(1); }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-10%) scale(0.5); opacity: 0; }
+}
+
+.jellyfish-glow {
+  animation: bioGlow 4s ease-in-out infinite;
+}
+
+
