@@ -181,13 +181,15 @@ export default function JellyfishBackground() {
           jelly.y += jelly.vy
 
           if (jelly.element) {
-            jelly.element.style.transform = `translate(${jelly.x}px, ${jelly.y}px)`
+            jelly.element.style.transform = `translate3d(${jelly.x}px, ${jelly.y}px, 0)`
           }
         })
+        animationRef.current = requestAnimationFrame(render)
       }
+    }
+    if (isInView) {
       animationRef.current = requestAnimationFrame(render)
     }
-    animationRef.current = requestAnimationFrame(render)
 
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect()

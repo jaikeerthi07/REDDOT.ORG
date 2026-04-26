@@ -1,9 +1,9 @@
 import React from "react"
 
-export function Tag({ children, className = "" }) {
+export const Tag = React.memo(({ children, className = "" }) => {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-black/40 bg-black/[0.04] uppercase ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-white/50 bg-white/10 border border-white/5 backdrop-blur-sm uppercase ${className}`}>
       {children}
     </span>
   )
-}
+})

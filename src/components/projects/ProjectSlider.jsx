@@ -38,7 +38,7 @@ export function ProjectSlider() {
   const currentColors = useCurrentColors(colors, currentIndex)
 
   return (
-    <div className="relative w-full h-[700px] overflow-hidden rounded-[48px] bg-black/5 border border-black/[0.05] mb-20">
+    <div className="relative w-full h-[700px] overflow-hidden rounded-[48px] bg-white/5 border border-white/[0.05] mb-20">
       {/* Dynamic Background */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -52,7 +52,7 @@ export function ProjectSlider() {
             background: `
               radial-gradient(circle at 20% 30%, ${currentColors[0]}33 0%, transparent 70%),
               radial-gradient(circle at 80% 70%, ${currentColors[1]}33 0%, transparent 70%),
-              linear-gradient(to bottom, #F5F4F0, #E5E4E0)
+              linear-gradient(to bottom, #000, #111)
             `
           }}
         />
@@ -95,9 +95,9 @@ export function ProjectSlider() {
       <NavigationDots total={projects.length} current={currentIndex} onSelect={goToSlide} colors={currentColors} />
       
       {/* Counter */}
-      <div className="absolute top-12 right-12 flex items-center gap-4 text-black/20 font-mono text-sm tracking-widest">
+      <div className="absolute top-12 right-12 flex items-center gap-4 text-white/20 font-mono text-sm tracking-widest">
         <span>{String(currentIndex + 1).padStart(2, '0')}</span>
-        <div className="w-8 h-[1px] bg-black/10" />
+        <div className="w-8 h-[1px] bg-white/10" />
         <span>{String(projects.length).padStart(2, '0')}</span>
       </div>
     </div>

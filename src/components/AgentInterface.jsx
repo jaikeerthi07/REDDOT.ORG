@@ -46,7 +46,7 @@ const ACTIVITY_SEED = Array.from({ length: 35 }, () => ({
   level: Math.random() > 0.4 ? Math.floor(Math.random() * 4) + 1 : 0,
 }))
 
-function MiniBarGraph({ seed }) {
+const MiniBarGraph = React.memo(({ seed }) => {
   const canvasRef = useRef(null); const rafRef = useRef(0); const barsRef = useRef([])
   useEffect(() => {
     const N = 20; barsRef.current = Array.from({ length: N }, (_, i) => 0.2 + 0.8 * Math.abs(Math.sin((i + seed) * 1.3)))
@@ -62,9 +62,9 @@ function MiniBarGraph({ seed }) {
     rafRef.current = requestAnimationFrame(draw); return () => cancelAnimationFrame(rafRef.current)
   }, [seed])
   return <canvas ref={canvasRef} style={{ width: "100%", height: 28, display: "block" }} />
-}
+})
 
-function LiveSparkline({ seed }) {
+const LiveSparkline = React.memo(({ seed }) => {
   const canvasRef = useRef(null); const rafRef = useRef(0); const ptsRef = useRef([])
   useEffect(() => {
     const N = 24; ptsRef.current = Array.from({ length: N }, (_, i) => 0.1 + 0.7 * Math.abs(Math.sin(i * 0.6 + (seed ?? 0))))
@@ -85,9 +85,9 @@ function LiveSparkline({ seed }) {
     rafRef.current = requestAnimationFrame(draw); return () => cancelAnimationFrame(rafRef.current)
   }, [seed])
   return <canvas ref={canvasRef} style={{ width: "100%", height: 28, display: "block" }} />
-}
+})
 
-function MiniDotGraph({ seed }) {
+const MiniDotGraph = React.memo(({ seed }) => {
   const canvasRef = useRef(null); const rafRef = useRef(0); const ptsRef = useRef([])
   useEffect(() => {
     const N = 18; ptsRef.current = Array.from({ length: N }, (_, i) => 0.1 + 0.8 * Math.abs(Math.sin(i * 0.9 + (seed ?? 2))))
@@ -105,7 +105,7 @@ function MiniDotGraph({ seed }) {
     rafRef.current = requestAnimationFrame(draw); return () => cancelAnimationFrame(rafRef.current)
   }, [seed])
   return <canvas ref={canvasRef} style={{ width: "100%", height: 28, display: "block" }} />
-}
+})
 
 function StatusBadge({ status }) {
   const cfg = { merged: { bg: "rgba(130,80,255,0.1)", color: "#8250df", icon: <GitMerge style={{ width: 9, height: 9 }} />, label: "Merged" }, approved: { bg: "rgba(40,167,69,0.1)", color: "#28a745", icon: <CheckCircle2 style={{ width: 9, height: 9 }} />, label: "Approved" }, review: { bg: "rgba(201,169,110,0.12)", color: "#b07d30", icon: <Eye style={{ width: 9, height: 9 }} />, label: "In Review" } }[status] ?? { bg: "#eee", color: "#666", icon: null, label: status }
@@ -118,19 +118,32 @@ function Bar({ pct, color = "rgba(0,0,0,0.75)" }) {
 }
 
 function Counter({ to, suffix = "" }) {
-  const [val, setVal] = useState(0); useEffect(() => { let s = null; const f = (ts) => { if (!s) s = ts; const p = Math.min((ts - s) / 1100, 1); setVal(Math.round((1 - Math.pow(1 - p, 3)) * to)); if (p < 1) requestAnimationFrame(f) }; requestAnimationFrame(f) }, [to])
-  return <>{val}{suffix}</>
+  const [val, setVal] = useState(0)
+  const { ref, inView } = useInView(0.1)
+
+  useEffect(() => { 
+    if (!inView) return
+    let s = null
+    const f = (ts) => { 
+      if (!s) s = ts
+      const p = Math.min((ts - s) / 1100, 1)
+      setVal(Math.round((1 - Math.pow(1 - p, 3)) * to))
+      if (p < 1) requestAnimationFrame(f) 
+    }
+    requestAnimationFrame(f) 
+  }, [to, inView])
+  return <span ref={ref}>{val}{suffix}</span>
 }
 
 function LiveDot() {
   return <span style={{ position: "relative", display: "inline-flex", width: 7, height: 7, flexShrink: 0 }}><span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#28a745", opacity: 0.4, animation: "ping 1.8s cubic-bezier(0,0,0.2,1) infinite" }} /><span style={{ borderRadius: "50%", width: "100%", height: "100%", background: "#28a745" }} /></span>
 }
 
-function HeatCell({ level, animDelay }) {
+const HeatCell = React.memo(({ level, animDelay }) => {
   const [visible, setVisible] = useState(false); useEffect(() => { const t = setTimeout(() => setVisible(true), animDelay); return () => clearTimeout(t) }, [animDelay])
   const colors = ["rgba(0,0,0,0.05)", "rgba(0,0,0,0.15)", "rgba(0,0,0,0.32)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.8)"]
   return <div style={{ width: 9, height: 9, borderRadius: 2, background: colors[level], opacity: visible ? 1 : 0, transition: `opacity 0.4s ease` }} />
-}
+})
 
 function ReviewLine({ item, delay }) {
   const [visible, setVisible] = useState(false); useEffect(() => { const t = setTimeout(() => setVisible(true), delay); return () => clearTimeout(t) }, [delay])
@@ -144,19 +157,83 @@ export function AgentInterface({ revealDelay = 0 }) {
   const [revealed, setRevealed] = useState(false); const [mounted, setMounted] = useState(false); const [reqCount, setReqCount] = useState(1847); const [cursor, setCursor] = useState(true); const [prOffset, setPrOffset] = useState(0); const [reviewFileIdx, setReviewFileIdx] = useState(0); const [reviewFilePcts, setReviewFilePcts] = useState([72, 45, 88, 31, 60]); const [reviewLineIdx, setReviewLineIdx] = useState(0); const [activity, setActivity] = useState(ACTIVITY_SEED)
   useEffect(() => { const t = setTimeout(() => setRevealed(true), revealDelay); return () => clearTimeout(t) }, [revealDelay])
   useEffect(() => { const t = setTimeout(() => setMounted(true), revealDelay + 300); return () => clearTimeout(t) }, [revealDelay])
-  useEffect(() => { const t = setInterval(() => { setReqCount(v => v + Math.floor(Math.random() * 8 + 2)) }, 1600); return () => clearInterval(t) }, [])
-  useEffect(() => { if (!mounted) return; const t = setInterval(() => setPrOffset(v => (v + 1) % (ALL_PRS.length - 3)), 4000); return () => clearInterval(t) }, [mounted])
-  useEffect(() => { if (!mounted) return; const t = setInterval(() => { setReviewFilePcts(p => p.map((v, i) => { const delta = Math.random() * 4 - 1; return Math.max(10, Math.min(99, v + (i === reviewFileIdx ? Math.abs(delta) + 1 : delta * 0.3))) })) }, 800); return () => clearInterval(t) }, [mounted, reviewFileIdx])
-  useEffect(() => { if (!mounted) return; const t = setInterval(() => setReviewFileIdx(v => (v + 1) % ALL_REVIEW_FILES.length), 2800); return () => clearInterval(t) }, [mounted])
-  useEffect(() => { if (!mounted) return; const t = setInterval(() => { setReviewLineIdx(p => { if (p >= ALL_REVIEW_LINES.length) return 0; return p + 1 }) }, 650); return () => clearInterval(t) }, [mounted])
-  useEffect(() => { if (!mounted) return; const t = setInterval(() => { setActivity(prev => { const next = [...prev]; const idx = Math.floor(Math.random() * next.length); next[idx] = { level: Math.min(4, next[idx].level + 1) }; return next }) }, 700); return () => clearInterval(t) }, [mounted])
-  useEffect(() => { const t = setInterval(() => setCursor(c => !c), 530); return () => clearInterval(t) }, [])
+  const containerRef = useRef(null)
+  const [isInView, setIsInView] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => { 
+    if (!isInView) return
+    const t = setInterval(() => { 
+      setReqCount(v => v + Math.floor(Math.random() * 8 + 2)) 
+    }, 2500) // Reduced frequency
+    return () => clearInterval(t) 
+  }, [isInView])
+
+  useEffect(() => { 
+    if (!mounted || !isInView) return
+    const t = setInterval(() => setPrOffset(v => (v + 1) % (ALL_PRS.length - 3)), 5000) // Slower rotation
+    return () => clearInterval(t) 
+  }, [mounted, isInView])
+
+  useEffect(() => { 
+    if (!mounted || !isInView) return
+    const t = setInterval(() => { 
+      setReviewFilePcts(p => p.map((v, i) => { 
+        const delta = Math.random() * 4 - 1
+        return Math.max(10, Math.min(99, v + (i === reviewFileIdx ? Math.abs(delta) + 1 : delta * 0.3))) 
+      })) 
+    }, 1500) // Slower updates
+    return () => clearInterval(t) 
+  }, [mounted, reviewFileIdx, isInView])
+
+  useEffect(() => { 
+    if (!mounted || !isInView) return
+    const t = setInterval(() => setReviewFileIdx(v => (v + 1) % ALL_REVIEW_FILES.length), 4000) 
+    return () => clearInterval(t) 
+  }, [mounted, isInView])
+
+  useEffect(() => { 
+    if (!mounted || !isInView) return
+    const t = setInterval(() => { 
+      setReviewLineIdx(p => { 
+        if (p >= ALL_REVIEW_LINES.length) return 0
+        return p + 1 
+      }) 
+    }, 1000) // Slower line reveal
+    return () => clearInterval(t) 
+  }, [mounted, isInView])
+
+  useEffect(() => { 
+    if (!mounted || !isInView) return
+    const t = setInterval(() => { 
+      setActivity(prev => { 
+        const next = [...prev]
+        const idx = Math.floor(Math.random() * next.length)
+        next[idx] = { level: Math.min(4, next[idx].level + 1) }
+        return next 
+      }) 
+    }, 1200) 
+    return () => clearInterval(t) 
+  }, [mounted, isInView])
+
+  useEffect(() => { 
+    const t = setInterval(() => setCursor(c => !c), 600) 
+    return () => clearInterval(t) 
+  }, [])
   const anim = (delay) => ({ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(10px)", transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}ms` })
   const panel = { background: "#fff", border: "1px solid rgba(0,0,0,0.07)", borderRadius: 10, overflow: "hidden" }
   const visiblePRs = ALL_PRS.slice(prOffset, prOffset + 4)
   return (
-    <div className="relative z-10 flex items-center justify-center pointer-events-none select-none px-3 md:px-8 w-full md:absolute md:inset-0 md:pt-[220px] md:pb-[8%]" style={{ paddingTop: "16px", paddingBottom: "16px" }}>
-      <div style={{ width: "100%", maxWidth: 900, background: "rgba(246,245,242,0.96)", border: "1px solid rgba(0,0,0,0.1)", backdropFilter: "blur(32px)", borderRadius: 18, overflow: "hidden", boxShadow: "0 28px 70px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.95) inset", opacity: revealed ? 1 : 0, transform: revealed ? "translateY(0)" : "translateY(72px)", transition: "opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)" }}>
+    <div ref={containerRef} className="relative z-10 flex items-center justify-center pointer-events-none select-none px-3 md:px-8 w-full md:absolute md:inset-0 md:pt-[220px] md:pb-[8%]" style={{ paddingTop: "16px", paddingBottom: "16px", contain: 'layout paint' }}>
+      <div style={{ width: "100%", maxWidth: 900, background: "rgba(246,245,242,0.96)", border: "1px solid rgba(0,0,0,0.1)", backdropFilter: isInView ? "blur(32px)" : "none", borderRadius: 18, overflow: "hidden", boxShadow: "0 28px 70px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.95) inset", opacity: revealed ? 1 : 0, transform: revealed ? "translateY(0)" : "translateY(72px)", transition: "opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)", willChange: 'transform, opacity' }}>
         <div style={{ display: "flex", alignItems: "center", padding: "9px 14px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "rgba(255,255,255,0.65)", position: "relative" }}>
           <div style={{ display: "flex", gap: 5 }}>{["#ff5f56","#ffbd2e","#27c93f"].map(c => (<span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />))}</div>
           <span style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", fontSize: 10, letterSpacing: "0.18em", color: "rgba(0,0,0,0.28)", fontFamily: "monospace" }}>reddot / platform — main</span>

@@ -235,3 +235,31 @@ section {
 }
 
 
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .glass, .glass-card, .backdrop-blur-md, .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  
+  .word-reveal {
+    animation: fadeInUp 0.8s ease-out forwards !important;
+    filter: none !important;
+  }
+
+  .zoom-layer-1, .zoom-layer-2, .zoom-layer-3, .zoom-layer-starship {
+    animation: none !important;
+    scale: 1 !important;
+  }
+  
+  #home video {
+    transform: none !important;
+  }
+}
+
+/* Ensure hardware acceleration for animated elements */
+.motion-gpu {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

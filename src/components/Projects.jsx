@@ -15,23 +15,28 @@ const projects = [
 ]
 
 import { ProjectSlider } from './projects/ProjectSlider'
+import StarfieldBackground from './StarfieldBackground'
 
 const Projects = () => {
   return (
-    <section id="projects" className="py-32 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-        <div className="max-w-xl">
-          <Tag>WHAT WE'VE BUILT</Tag>
-          <RevealText className="mt-6 text-4xl md:text-5xl font-light tracking-tight leading-[1.1]">
-            Featured <span className="italic font-normal">Projects</span>
-          </RevealText>
-          <p className="mt-8 text-lg text-black/45 font-light leading-relaxed">
-            Real-world solutions built using advanced AI and embedded engineering.
-          </p>
-        </div>
-      </div>
+    <section id="projects" className="relative overflow-hidden bg-black">
+      <StarfieldBackground>
+        <div className="relative py-32 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div className="max-w-xl">
+              <Tag>WHAT WE'VE BUILT</Tag>
+              <RevealText className="mt-6 text-4xl md:text-5xl font-light tracking-tight leading-[1.1] text-white">
+                Featured <span className="italic font-normal text-white/80">Projects</span>
+              </RevealText>
+              <p className="mt-8 text-lg text-white/45 font-light leading-relaxed">
+                Real-world solutions built using advanced AI and embedded engineering.
+              </p>
+            </div>
+          </div>
 
-      <ProjectSlider />
+          <ProjectSlider />
+        </div>
+      </StarfieldBackground>
     </section>
   )
 }

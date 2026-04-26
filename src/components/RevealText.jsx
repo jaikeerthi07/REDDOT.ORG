@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 
-export function RevealText({
+export const RevealText = React.memo(({
   children,
   className = "",
   as: Tag = "h2",
@@ -8,7 +8,7 @@ export function RevealText({
   duration = 700,
   delay = 0,
   threshold = 0.2,
-}) {
+}) => {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
@@ -70,4 +70,4 @@ export function RevealText({
       })}
     </Tag>
   )
-}
+})

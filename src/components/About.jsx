@@ -4,7 +4,7 @@ import { Target, Eye, Linkedin, Twitter, Mail } from 'lucide-react'
 import { Tag } from './Tag'
 import { RevealText } from './RevealText'
 import { BentoCard } from './BentoCard'
-import JellyfishBackground from './JellyfishBackground'
+import FloatingAIObjects from './FloatingAIObjects'
 
 const founders = [
   {
@@ -26,17 +26,21 @@ const founders = [
   }
 ]
 
+import ThreeDParallax from './ThreeDParallax'
+
 const About = () => {
   return (
-    <section id="about" className="relative py-32 px-6 md:px-12 lg:px-20 overflow-hidden bg-[#00050f]">
-      <JellyfishBackground />
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+    <section id="about" className="relative overflow-hidden bg-black">
+      <ThreeDParallax bgImage="/images/bg/about.png" theme="about">
+        <div className="relative py-32 px-6 md:px-12 lg:px-20">
+          <FloatingAIObjects section="about" />
+          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         <div className="lg:col-span-5">
           <Tag>WHO WE ARE</Tag>
           <RevealText className="mt-6 text-4xl md:text-5xl font-light tracking-tight leading-[1.1] text-white">
-            About <span className="italic font-normal text-blue-400">REDDOT</span>
+            About <span className="italic font-normal">REDDOT</span>
           </RevealText>
-          <p className="mt-8 text-lg text-white/60 font-light leading-relaxed">
+          <p className="mt-8 text-lg text-white/45 font-light leading-relaxed">
             RedDot is an advanced technology company focused on AI, software, and embedded systems. We bridge the gap between complex engineering and real-world utility.
           </p>
 
@@ -45,7 +49,7 @@ const About = () => {
               { label: "Our Mission", text: "Build intelligent and scalable solutions for a smarter tomorrow.", icon: Target },
               { label: "Our Vision", text: "Become a global leader in AI and industrial automation.", icon: Eye }
             ].map((item, i) => (
-              <div key={i} className="p-6 rounded-2xl border border-white/[0.1] bg-white/[0.03] backdrop-blur-sm flex gap-4">
+              <div key={i} className="p-6 rounded-2xl border-white/[0.05] bg-white/[0.03] backdrop-blur-sm flex gap-4">
                 <item.icon className="text-white/30 mt-1" size={20} />
                 <div>
                   <h4 className="text-sm font-medium text-white/80">{item.label}</h4>
@@ -58,12 +62,12 @@ const About = () => {
 
         <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
           {founders.map((founder, i) => (
-            <BentoCard key={founder.name} delay={i * 100} className="p-8 flex flex-col items-center text-center bg-white/[0.05] border-white/[0.1] backdrop-blur-md">
+            <BentoCard key={founder.name} delay={i * 100} className="p-8 flex flex-col items-center text-center bg-white/5 border-white/10 backdrop-blur-md shadow-sm">
               <a 
                 href={founder.portfolio || "#"} 
                 target={founder.portfolio ? "_blank" : "_self"}
                 rel={founder.portfolio ? "noopener noreferrer" : ""}
-                className={`relative w-32 h-32 rounded-full overflow-hidden border border-black/[0.05] bg-black/[0.02] mb-6 block ${founder.portfolio ? 'cursor-pointer hover:border-black/20 group' : 'cursor-default'}`}
+                className={`relative w-32 h-32 rounded-full overflow-hidden border-white/[0.05] bg-white/[0.02] mb-6 block ${founder.portfolio ? 'cursor-pointer hover:border-white/20 group' : 'cursor-default'}`}
               >
                 <img
                   src={founder.image}
@@ -78,8 +82,8 @@ const About = () => {
               </a>
               
               <h4 className="text-xl font-light text-white/90">{founder.name}</h4>
-              <p className="mt-1 text-[10px] tracking-widest text-blue-400/60 uppercase font-mono">{founder.role}</p>
-              <p className="mt-4 text-sm text-white/60 leading-relaxed">
+              <p className="mt-1 text-[10px] tracking-widest text-white/40 uppercase font-mono">{founder.role}</p>
+              <p className="mt-4 text-sm text-white/50 leading-relaxed">
                 {founder.specialty}
               </p>
 
@@ -88,7 +92,7 @@ const About = () => {
                   <a
                     key={j}
                     href="#"
-                    className="w-8 h-8 rounded-full border border-white/[0.1] flex items-center justify-center text-white/30 hover:text-white hover:border-white/20 transition-all"
+                    className="w-8 h-8 rounded-full border border-white/[0.07] flex items-center justify-center text-white/30 hover:text-white hover:border-white/20 transition-all"
                   >
                     <Icon size={14} />
                   </a>
@@ -97,16 +101,18 @@ const About = () => {
             </BentoCard>
           ))}
           
-          <BentoCard className="md:col-span-2 p-8 flex items-center justify-center border-dashed bg-white/[0.02] border-white/[0.1]">
+          <BentoCard className="md:col-span-2 p-8 flex items-center justify-center border-dashed bg-white/[0.01] border-white/[0.1]">
             <div className="text-center">
-              <div className="w-12 h-12 rounded-full border border-white/[0.1] flex items-center justify-center mx-auto mb-4">
-                <img src="/reddot logo.png" alt="Logo" className="h-6 object-contain opacity-50 brightness-0 invert" />
+              <div className="w-12 h-12 rounded-full border-white/[0.05] flex items-center justify-center mx-auto mb-4">
+                <img src="/reddot logo.png" alt="Logo" className="h-6 object-contain opacity-50 invert" />
               </div>
               <p className="text-[10px] tracking-[0.3em] text-white/20 uppercase font-mono">ESTABLISHED 2024</p>
             </div>
           </BentoCard>
         </div>
       </div>
+        </div>
+      </ThreeDParallax>
     </section>
   )
 }

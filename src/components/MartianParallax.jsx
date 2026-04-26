@@ -7,7 +7,15 @@ export const MartianParallax = ({ children }) => {
   const containerRef = useRef(null)
   const lastUpdateRef = useRef(0)
 
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024 || 'ontouchstart' in window)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry.isIntersecting),
       { threshold: 0.1 }
@@ -15,7 +23,7 @@ export const MartianParallax = ({ children }) => {
     if (containerRef.current) observer.observe(containerRef.current)
 
     const handleMouseMove = (e) => {
-      if (!isInView || lastUpdateRef.current) return
+      if (isMobile || !isInView || lastUpdateRef.current) return
       lastUpdateRef.current = true
       requestAnimationFrame(() => {
         const x = (e.clientX - window.innerWidth / 2) / window.innerWidth
@@ -25,14 +33,17 @@ export const MartianParallax = ({ children }) => {
       })
     }
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true })
+    if (!isMobile) {
+      window.addEventListener("mousemove", handleMouseMove, { passive: true })
+    }
     setShouldAnimate(true)
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
+      window.removeEventListener('resize', checkMobile)
       observer.disconnect()
     }
-  }, [isInView])
+  }, [isInView, isMobile])
 
   return (
     <div 
@@ -44,8 +55,8 @@ export const MartianParallax = ({ children }) => {
       <div
         className={`absolute inset-0 ${shouldAnimate ? "zoom-layer-1" : ""}`}
         style={{
-          transform: `translate3d(${mousePosition.x * 30}px, ${mousePosition.y * 30}px, 0)`,
-          willChange: "transform",
+          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 30}px, ${mousePosition.y * 30}px, 0)`,
+          willChange: isMobile ? 'auto' : "transform",
           width: "130%",
           height: "130%",
           left: "-15%",
@@ -59,12 +70,13 @@ export const MartianParallax = ({ children }) => {
       <div
         className={`absolute z-5 ${shouldAnimate ? "zoom-layer-starship" : ""}`}
         style={{
-          transform: `translate3d(${mousePosition.x * 50}px, ${mousePosition.y * 50}px, 0) scale(0.75)`,
-          willChange: "transform",
-          width: "800px",
-          height: "800px",
-          left: "20px",
-          top: "20px",
+          transform: isMobile ? 'scale(0.5)' : `translate3d(${mousePosition.x * 50}px, ${mousePosition.y * 50}px, 0) scale(0.75)`,
+          willChange: isMobile ? 'auto' : "transform",
+          width: isMobile ? "300px" : "800px",
+          height: isMobile ? "300px" : "800px",
+          left: isMobile ? "50%" : "20px",
+          top: isMobile ? "20px" : "20px",
+          marginLeft: isMobile ? "-150px" : "0",
         }}
       >
         <img src="/images/starship.png" alt="Starship" className="w-full h-full object-contain" loading="lazy" decoding="async" />
@@ -74,8 +86,8 @@ export const MartianParallax = ({ children }) => {
       <div
         className={`absolute inset-0 z-10 ${shouldAnimate ? "zoom-layer-2" : ""}`}
         style={{
-          transform: `translate3d(${mousePosition.x * 60}px, ${mousePosition.y * 60}px, 0)`,
-          willChange: "transform",
+          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 60}px, ${mousePosition.y * 60}px, 0)`,
+          willChange: isMobile ? 'auto' : "transform",
           width: "130%",
           height: "130%",
           left: "-15%",
@@ -89,8 +101,8 @@ export const MartianParallax = ({ children }) => {
       <div
         className={`absolute inset-0 flex items-center justify-center z-10 px-6 ${shouldAnimate ? "zoom-layer-text" : ""}`}
         style={{
-          transform: `translate3d(${mousePosition.x * 90}px, ${mousePosition.y * 90}px, 0)`,
-          willChange: "transform",
+          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 90}px, ${mousePosition.y * 90}px, 0)`,
+          willChange: isMobile ? 'auto' : "transform",
           perspective: "1000px",
         }}
       >

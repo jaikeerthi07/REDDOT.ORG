@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { IntroAnimation, HERO_REVEAL_MS } from "./components/IntroAnimation"
-import { AgentInterface } from "./components/AgentInterface"
-import { PixelIcon } from "./components/PixelIcon"
-import { LiveReddotFeed, LiveReddotCounter } from "./components/LiveAgentFeed"
 import { RevealText } from "./components/RevealText"
 
 import { MobileNav } from "./components/MobileNav"
@@ -44,19 +41,24 @@ function useInView(threshold = 0.15) {
 function Counter({ end, suffix = "" }) {
   const [count, setCount] = useState(0)
   const { ref, inView } = useInView()
+  
   useEffect(() => {
     if (!inView) return
-    let start = 0
-    const duration = 1800
-    const step = 20 // Slower step for performance
-    const increment = end / (duration / step)
-    const timer = setInterval(() => {
-      start += increment
-      if (start >= end) { setCount(end); clearInterval(timer) }
-      else setCount(Math.floor(start))
-    }, step)
-    return () => clearInterval(timer)
+    let start = null
+    const duration = 1500
+    const animate = (timestamp) => {
+      if (!start) start = timestamp
+      const progress = Math.min((timestamp - start) / duration, 1)
+      setCount(Math.floor(progress * end))
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      } else {
+        setCount(end)
+      }
+    }
+    requestAnimationFrame(animate)
   }, [inView, end])
+
   return <span ref={ref}>{count.toLocaleString()}{suffix}</span>
 }
 
@@ -163,38 +165,38 @@ function App() {
         </Suspense>
 
         {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-        <footer className="py-20 px-6 border-t border-black/[0.06] text-center">
+        <footer className="py-20 px-6 border-t border-white/[0.05] bg-black text-center relative z-10">
           <div className="mb-12 flex justify-center items-center gap-2">
-            <img src="/reddot logo.png" alt="REDDOT" className="h-8 object-contain mix-blend-multiply" />
-            <span className="font-pixel text-xs tracking-[0.4em] text-black/30">REDDOT INNOVATIVE SOLUTIONS</span>
+            <img src="/reddot logo.png" alt="REDDOT" className="h-8 object-contain invert opacity-50" />
+            <span className="font-pixel text-xs tracking-[0.4em] text-white/20">REDDOT INNOVATIVE SOLUTIONS</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-4xl mx-auto text-left mb-20">
             <div>
-              <h4 className="text-[10px] tracking-widest text-black/30 uppercase mb-6">RedDot</h4>
+              <h4 className="text-[10px] tracking-widest text-white/20 uppercase mb-6 font-mono">RedDot</h4>
               <div className="flex flex-col gap-3">
-                {['Home', 'Services', 'Projects', 'Products'].map(l => <a key={l} href={`#${l.toLowerCase()}`} className="text-sm text-black/50 hover:text-black transition-colors">{l}</a>)}
+                {['Home', 'Services', 'Projects', 'Products'].map(l => <a key={l} href={`#${l.toLowerCase()}`} className="text-sm text-white/40 hover:text-white transition-colors">{l}</a>)}
               </div>
             </div>
             <div>
-              <h4 className="text-[10px] tracking-widest text-black/30 uppercase mb-6">Connect</h4>
+              <h4 className="text-[10px] tracking-widest text-white/20 uppercase mb-6 font-mono">Connect</h4>
               <div className="flex flex-col gap-3">
-                {['About', 'Careers', 'Contact'].map(l => <a key={l} href={`#${l.toLowerCase()}`} className="text-sm text-black/50 hover:text-black transition-colors">{l}</a>)}
+                {['About', 'Careers', 'Contact'].map(l => <a key={l} href={`#${l.toLowerCase()}`} className="text-sm text-white/40 hover:text-white transition-colors">{l}</a>)}
               </div>
             </div>
             <div>
-              <h4 className="text-[10px] tracking-widest text-black/30 uppercase mb-6">Legal</h4>
+              <h4 className="text-[10px] tracking-widest text-white/20 uppercase mb-6 font-mono">Legal</h4>
               <div className="flex flex-col gap-3">
-                {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(l => <a key={l} href="#" className="text-sm text-black/50 hover:text-black transition-colors">{l}</a>)}
+                {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(l => <a key={l} href="#" className="text-sm text-white/40 hover:text-white transition-colors">{l}</a>)}
               </div>
             </div>
             <div>
-              <h4 className="text-[10px] tracking-widest text-black/30 uppercase mb-6">Social</h4>
+              <h4 className="text-[10px] tracking-widest text-white/20 uppercase mb-6 font-mono">Social</h4>
               <div className="flex flex-col gap-3">
-                {['Twitter', 'GitHub', 'LinkedIn'].map(l => <a key={l} href="#" className="text-sm text-black/50 hover:text-black transition-colors">{l}</a>)}
+                {['Twitter', 'GitHub', 'LinkedIn'].map(l => <a key={l} href="#" className="text-sm text-white/40 hover:text-white transition-colors">{l}</a>)}
               </div>
             </div>
           </div>
-          <p className="text-[10px] text-black/25 font-mono tracking-wider uppercase">© {new Date().getFullYear()} REDDOT INNOVATIVE SOLUTIONS. ALL RIGHTS RESERVED.</p>
+          <p className="text-[10px] text-white/10 font-mono tracking-wider uppercase">© {new Date().getFullYear()} REDDOT INNOVATIVE SOLUTIONS. ALL RIGHTS RESERVED.</p>
         </footer>
       </motion.div>
     </div>

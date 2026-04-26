@@ -21,7 +21,6 @@ const FloatingOrb = ({ size, color, top, left, delay, duration, amplitude, seed 
         left,
         background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
         willChange: 'transform',
-        // Removed filter:blur — too expensive on animated elements
       }}
       animate={{
         x: [0, x1, -x1 * 0.5, x1 * 0.3, 0],
@@ -39,7 +38,6 @@ const FloatingOrb = ({ size, color, top, left, delay, duration, amplitude, seed 
   )
 }
 
-// A spinning ring that orbits like a satellite
 const OrbitRing = ({ size, top, left, duration, delay, color }) => (
   <motion.div
     className="absolute pointer-events-none"
@@ -47,11 +45,7 @@ const OrbitRing = ({ size, top, left, duration, delay, color }) => (
     animate={{ rotate: 360 }}
     transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
   >
-    <div
-      className="w-full h-full rounded-full border"
-      style={{ borderColor: color, opacity: 0.25 }}
-    />
-    {/* Dot on the ring */}
+    <div className="w-full h-full rounded-full border" style={{ borderColor: color, opacity: 0.25 }} />
     <motion.div
       className="absolute rounded-full"
       style={{
@@ -67,7 +61,6 @@ const OrbitRing = ({ size, top, left, duration, delay, color }) => (
   </motion.div>
 )
 
-// Floating data packet — a small rect/line moving diagonally
 const DataPacket = ({ top, left, delay, duration, dx, dy, color }) => (
   <motion.div
     className="absolute pointer-events-none"
@@ -76,25 +69,17 @@ const DataPacket = ({ top, left, delay, duration, dx, dy, color }) => (
     animate={{ opacity: [0, 1, 1, 0], x: dx, y: dy }}
     transition={{ duration, delay, repeat: Infinity, repeatDelay: 2.5 }}
   >
-    <div
-      className="rounded-sm"
-      style={{ width: 20, height: 3, background: color, opacity: 0.7, boxShadow: `0 0 8px ${color}` }}
-    />
+    <div className="rounded-sm" style={{ width: 20, height: 3, background: color, opacity: 0.7, boxShadow: `0 0 8px ${color}` }} />
   </motion.div>
 )
 
-// Pulsing hexagonal/diamond node icon (AI agent node)
 const AgentNode = ({ top, left, delay, size, color }) => (
   <motion.div
     className="absolute pointer-events-none flex items-center justify-center"
     style={{ top, left, width: size, height: size, willChange: 'transform' }}
-    animate={{
-      scale: [1, 1.2, 1],
-      opacity: [0.4, 0.9, 0.4],
-    }}
+    animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.9, 0.4] }}
     transition={{ duration: 2.8, delay, repeat: Infinity, ease: 'easeInOut' }}
   >
-    {/* Hexagon shape via CSS clip */}
     <div
       style={{
         width: size,
@@ -108,7 +93,6 @@ const AgentNode = ({ top, left, delay, size, color }) => (
   </motion.div>
 )
 
-// Scanning horizontal line (like radar sweep)
 const ScanLine = ({ top, color, duration, delay }) => (
   <motion.div
     className="absolute left-0 right-0 pointer-events-none"
@@ -118,12 +102,8 @@ const ScanLine = ({ top, color, duration, delay }) => (
   />
 )
 
-// Circuit trace — animated horizontal dashed line
 const CircuitTrace = ({ top, left, width, color, delay }) => (
-  <motion.div
-    className="absolute pointer-events-none"
-    style={{ top, left, width, height: 1, overflow: 'hidden' }}
-  >
+  <motion.div className="absolute pointer-events-none" style={{ top, left, width, height: 1, overflow: 'hidden' }}>
     <motion.div
       style={{ height: '100%', background: `linear-gradient(to right, transparent, ${color} 30%, ${color} 70%, transparent)`, opacity: 0.3 }}
       animate={{ x: ['-100%', '200%'] }}
@@ -135,14 +115,22 @@ const CircuitTrace = ({ top, left, width, color, delay }) => (
 const FloatingAIObjects = ({ section = 'hero' }) => {
   const containerRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry.isIntersecting),
       { threshold: 0.05 }
     )
     if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', checkMobile)
+    }
   }, [])
 
   const cfg = {
@@ -230,18 +218,18 @@ const FloatingAIObjects = ({ section = 'hero' }) => {
 
   if (!isInView && section !== 'hero') return <div ref={containerRef} className="absolute inset-0" />
 
+  const filterMobile = (arr) => isMobile ? arr?.slice(0, Math.ceil(arr.length / 2)) : arr
+
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {c.orbs?.map((o, i) => <FloatingOrb key={`orb-${i}`} {...o} />)}
-      {c.rings?.map((r, i) => <OrbitRing key={`ring-${i}`} {...r} />)}
-      {c.packets?.map((p, i) => <DataPacket key={`pkt-${i}`} {...p} />)}
-      {c.agents?.map((a, i) => <AgentNode key={`agent-${i}`} {...a} />)}
-      {c.scans?.map((s, i) => <ScanLine key={`scan-${i}`} {...s} />)}
-      {c.traces?.map((t, i) => <CircuitTrace key={`trace-${i}`} {...t} />)}
+      {filterMobile(c.orbs)?.map((o, i) => <FloatingOrb key={`orb-${i}`} {...o} />)}
+      {filterMobile(c.rings)?.map((r, i) => <OrbitRing key={`ring-${i}`} {...r} />)}
+      {filterMobile(c.packets)?.map((p, i) => <DataPacket key={`pkt-${i}`} {...p} />)}
+      {filterMobile(c.agents)?.map((a, i) => <AgentNode key={`agent-${i}`} {...a} />)}
+      {filterMobile(c.scans)?.map((s, i) => <ScanLine key={`scan-${i}`} {...s} />)}
+      {filterMobile(c.traces)?.map((t, i) => <CircuitTrace key={`trace-${i}`} {...t} />)}
     </div>
   )
 }
 
-
 export default FloatingAIObjects
-

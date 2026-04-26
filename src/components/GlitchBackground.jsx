@@ -1,6 +1,12 @@
 import React, { useRef, useEffect } from "react"
 import { Canvas, useThree, useLoader, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
+import { getProject, types } from '@theatre/core'
+import { SheetProvider, editable as e } from '@theatre/r3f'
+
+// Initialize Theatre.js project and sheet
+const project = getProject('REDDOT_Visuals')
+const sheet = project.sheet('Glitch Scene')
 
 const vertexShader = `
   varying vec2 vUv;
@@ -59,6 +65,15 @@ function GlitchScene({ isHovered }) {
   const { scene, camera, size } = useThree()
   const meshRef = useRef(null)
   const materialRef = useRef(null)
+  
+  // Theatre.js object for controlling shader parameters
+  const theatreObj = useRef(sheet.object('Glitch Controls', {
+    intensity: types.number(0.0, { range: [0, 1] }),
+    waveY: types.number(1.0, { range: [-0.2, 1.2] }),
+    waveWidth: types.number(0.07, { range: [0, 0.5] }),
+    automatic: types.boolean(true)
+  }))
+
   const waveState = useRef({ active: false, waveY: 1.0, speed: 0.55, cooldown: 0.0, nextCooldown: 2.0 + Math.random() * 2.0 })
   const defaultTexture = useLoader(THREE.TextureLoader, "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-nature-RN8PX1dGhZlLMsI4flnWQM6uInZYY1.png")
   const hoverTexture = useLoader(THREE.TextureLoader, "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/fr-nature-lWxWsWzCM2kVPeHafi3LHqb0fM4DPL.png")
@@ -71,32 +86,106 @@ function GlitchScene({ isHovered }) {
     const scale = Math.max((2 * frustumSize * screenAspect) / (imageAspect * 2 * frustumSize), 1)
     const planeWidth = imageAspect * 2 * frustumSize * scale; const planeHeight = 2 * frustumSize * scale
     const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
-    const material = new THREE.ShaderMaterial({ uniforms: { uBgTexture: { value: defaultTexture }, uFrTexture: { value: hoverTexture }, uTime: { value: 0 }, uWaveY: { value: 1.0 }, uWaveWidth: { value: 0.07 }, uIntensity: { value: 0.0 } }, vertexShader, fragmentShader })
+    const material = new THREE.ShaderMaterial({ 
+      uniforms: { 
+        uBgTexture: { value: defaultTexture }, 
+        uFrTexture: { value: hoverTexture }, 
+        uTime: { value: 0 }, 
+        uWaveY: { value: 1.0 }, 
+        uWaveWidth: { value: 0.07 }, 
+        uIntensity: { value: 0.0 } 
+      }, 
+      vertexShader, 
+      fragmentShader 
+    })
     materialRef.current = material
     const mesh = new THREE.Mesh(geometry, material)
-    meshRef.current = mesh; scene.add(mesh)
+    meshRef.current = mesh; 
+    scene.add(mesh)
     return () => { scene.remove(mesh); geometry.dispose(); material.dispose() }
   }, [size.width, size.height])
 
-  useEffect(() => { if (materialRef.current) { materialRef.current.uniforms.uBgTexture.value = defaultTexture; materialRef.current.uniforms.uFrTexture.value = hoverTexture } })
-  useEffect(() => { if (isHovered && materialRef.current) { materialRef.current.uniforms.uIntensity.value = 0.0; waveState.current.active = false } }, [isHovered])
+  useEffect(() => { 
+    if (materialRef.current) { 
+      materialRef.current.uniforms.uBgTexture.value = defaultTexture; 
+      materialRef.current.uniforms.uFrTexture.value = hoverTexture 
+    } 
+  })
+  
+  useEffect(() => { 
+    if (isHovered && materialRef.current) { 
+      materialRef.current.uniforms.uIntensity.value = 0.0; 
+      waveState.current.active = false 
+    } 
+  }, [isHovered])
 
   useFrame((state, delta) => {
     if (!materialRef.current || isHovered) return
-    const mat = materialRef.current; const ws = waveState.current
+    const mat = materialRef.current; 
+    const ws = waveState.current
+    const tValues = theatreObj.current.value
+
     mat.uniforms.uTime.value = state.clock.elapsedTime
-    if (!ws.active) { ws.cooldown -= delta; if (ws.cooldown <= 0) { ws.active = true; ws.waveY = 1.0; ws.nextCooldown = 1.5 + Math.random() * 2.5 } }
-    else { ws.waveY -= ws.speed * delta; mat.uniforms.uWaveY.value = ws.waveY; mat.uniforms.uIntensity.value = 1.0; if (ws.waveY < -0.15) { ws.active = false; ws.cooldown = ws.nextCooldown; mat.uniforms.uIntensity.value = 0.0 } }
+    
+    // If Theatre.js "automatic" is off, we use the Theatre.js values directly
+    if (!tValues.automatic) {
+      mat.uniforms.uWaveY.value = tValues.waveY
+      mat.uniforms.uIntensity.value = tValues.intensity
+      mat.uniforms.uWaveWidth.value = tValues.waveWidth
+      return
+    }
+
+    // Default automatic logic
+    if (!ws.active) { 
+      ws.cooldown -= delta; 
+      if (ws.cooldown <= 0) { 
+        ws.active = true; 
+        ws.waveY = 1.0; 
+        ws.nextCooldown = 1.5 + Math.random() * 2.5 
+      } 
+    } else { 
+      ws.waveY -= ws.speed * delta; 
+      mat.uniforms.uWaveY.value = ws.waveY; 
+      mat.uniforms.uIntensity.value = 1.0; 
+      if (ws.waveY < -0.15) { 
+        ws.active = false; 
+        ws.cooldown = ws.nextCooldown; 
+        mat.uniforms.uIntensity.value = 0.0 
+      } 
+    }
   })
+  
   return null
 }
 
 export function GlitchBackground({ isHovered }) {
+  const containerRef = useRef(null)
+  const [isInView, setIsInView] = React.useState(true) // Start true since it's likely in Hero
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div className="absolute inset-0">
-      <Canvas orthographic camera={{ position: [0, 0, 1], zoom: 1 }} gl={{ alpha: false, antialias: true }} style={{ width: "100%", height: "100%" }}>
-        <GlitchScene isHovered={isHovered} />
-      </Canvas>
+    <div ref={containerRef} className="absolute inset-0">
+      {isInView && (
+        <Canvas 
+          orthographic 
+          camera={{ position: [0, 0, 1], zoom: 1 }} 
+          gl={{ alpha: false, antialias: false, powerPreference: "high-performance" }} 
+          dpr={[1, 2]}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <SheetProvider sheet={sheet}>
+            <GlitchScene isHovered={isHovered} />
+          </SheetProvider>
+        </Canvas>
+      )}
       <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, black 0%, black 15%, transparent 60%)" }} />
     </div>
   )

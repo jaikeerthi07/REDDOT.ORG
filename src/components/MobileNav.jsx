@@ -10,9 +10,9 @@ const NAV_LINKS = [
 ]
 
 const NAV_STYLE = {
-  backdropFilter: "blur(24px)",
-  WebkitBackdropFilter: "blur(24px)",
-  background: "rgba(245,244,240,0.4)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  background: "rgba(245,244,240,0.6)",
   boxShadow: "0 8px 32px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.02)",
 }
 

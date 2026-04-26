@@ -53,11 +53,9 @@ export function IntroAnimation({ onDone }) {
             const translateY = isIdle ? 48 : isIn ? 0 : -20
             const transition = isOut
               ? `opacity ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
-                 filter  ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
                  transform ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms`
               : isIn
               ? `opacity ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
-                 filter  ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
                  transform ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms`
               : "none"
             return (
@@ -68,10 +66,9 @@ export function IntroAnimation({ onDone }) {
                   fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
                   letterSpacing: "0.05em",
                   opacity,
-                  filter: `blur(${blur}px)`,
-                  transform: `translateY(${translateY}px)`,
+                  transform: `translate3d(0, ${translateY}px, 0)`,
                   transition,
-                  willChange: "opacity, filter, transform",
+                  willChange: "opacity, transform",
                 }}
               >
                 {letter}
