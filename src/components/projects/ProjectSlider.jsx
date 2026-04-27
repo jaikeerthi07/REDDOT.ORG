@@ -1,5 +1,6 @@
 import React, { useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { ProjectCard } from "./ProjectCard"
 import { NavigationDots } from "./NavigationDots"
 import { useSliderNavigation } from "../../hooks/useSliderNavigation"
@@ -38,7 +39,7 @@ export function ProjectSlider() {
   const currentColors = useCurrentColors(colors, currentIndex)
 
   return (
-    <div className="relative w-full h-[700px] overflow-hidden rounded-[48px] bg-white/5 border border-white/[0.05] mb-20">
+    <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden rounded-[48px] bg-white/5 border border-white/[0.05] mb-20 group/slider">
       {/* Dynamic Background */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -60,6 +61,26 @@ export function ProjectSlider() {
 
       <div className="absolute inset-0 backdrop-blur-3xl opacity-50" />
 
+      {/* Navigation Arrows */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-6 md:px-10 pointer-events-none">
+        <motion.button
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: currentIndex > 0 ? 1 : 0, x: currentIndex > 0 ? 0 : -10 }}
+          onClick={goToPrev}
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:scale-110 transition-all pointer-events-auto backdrop-blur-md"
+        >
+          <ChevronLeft size={24} />
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: currentIndex < projects.length - 1 ? 1 : 0, x: currentIndex < projects.length - 1 ? 0 : 10 }}
+          onClick={goToNext}
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:scale-110 transition-all pointer-events-auto backdrop-blur-md"
+        >
+          <ChevronRight size={24} />
+        </motion.button>
+      </div>
+
       {/* Slider Container */}
       <div
         ref={sliderRef}
@@ -77,7 +98,7 @@ export function ProjectSlider() {
           animate={{
             x: -currentIndex * (window.innerWidth > 768 ? 482 : 352) + dragX,
           }}
-          transition={isDragging ? { duration: 0 } : { duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+          transition={isDragging ? { duration: 0 } : { duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           {projects.map((project, index) => (
             <ProjectCard
@@ -95,7 +116,7 @@ export function ProjectSlider() {
       <NavigationDots total={projects.length} current={currentIndex} onSelect={goToSlide} colors={currentColors} />
       
       {/* Counter */}
-      <div className="absolute top-12 right-12 flex items-center gap-4 text-white/20 font-mono text-sm tracking-widest">
+      <div className="absolute top-8 md:top-12 right-8 md:right-12 flex items-center gap-4 text-white/20 font-mono text-sm tracking-widest">
         <span>{String(currentIndex + 1).padStart(2, '0')}</span>
         <div className="w-8 h-[1px] bg-white/10" />
         <span>{String(projects.length).padStart(2, '0')}</span>
@@ -103,3 +124,4 @@ export function ProjectSlider() {
     </div>
   )
 }
+

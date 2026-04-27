@@ -113,7 +113,7 @@ const Products = () => {
                       />
 
                       {/* Mock Interface Content */}
-                      <div className="absolute inset-0 p-8 flex flex-col gap-6 relative z-10">
+                      <div className="absolute inset-0 p-4 sm:p-8 flex flex-col gap-6 relative z-10">
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                           <div className="flex items-center gap-3">
@@ -141,10 +141,10 @@ const Products = () => {
                             transition={{ duration: 0.6, delay: 0.4 }}
                             className="col-span-8 aspect-[4/3] bg-black/40 rounded-xl border border-white/[0.1] overflow-hidden relative group/poster shadow-lg"
                           >
-                            <img 
-                              src="/images/sem_poster.png" 
-                              alt="SEM Event Poster" 
-                              className="w-full h-full object-cover opacity-80 group-hover/poster:opacity-100 group-hover/poster:scale-110 transition-all duration-700" 
+                            <img
+                              src="/images/sem_poster.png"
+                              alt="SEM Event Poster"
+                              className="w-full h-full object-cover opacity-80 group-hover/poster:opacity-100 group-hover/poster:scale-110 transition-all duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                             <div className="absolute bottom-3 left-3 flex flex-col gap-1">
@@ -169,8 +169,8 @@ const Products = () => {
                                   transition={{ duration: 2, repeat: Infinity, delay: i }}
                                 />
                                 <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                                   <div className="h-1 w-8 bg-white/20 rounded-full mb-1" />
-                                   <div className="h-1 w-12 bg-white/10 rounded-full" />
+                                  <div className="h-1 w-8 bg-white/20 rounded-full mb-1" />
+                                  <div className="h-1 w-12 bg-white/10 rounded-full" />
                                 </div>
                               </motion.div>
                             ))}

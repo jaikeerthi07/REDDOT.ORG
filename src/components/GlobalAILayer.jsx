@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 // Optimized CSS animations for zero main-thread overhead
 const CSS_ANIMATIONS = `
@@ -100,18 +100,32 @@ const HexOutline = ({ seed }) => {
 }
 
 const GlobalAILayer = () => {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  const crystalCount = isMobile ? 3 : 6
+  const diamondCount = isMobile ? 4 : 8
+  const hexCount = isMobile ? 1 : 3
+
   return (
     <>
       <style>{CSS_ANIMATIONS}</style>
       <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
         {/* Balanced density for premium performance */}
-        {[1, 2, 3, 4, 5, 6].map(i => <CrystalShard key={`crystal-${i}`} seed={i} />)}
-        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <DiamondNode key={`diamond-${i}`} seed={i} />)}
-        {[1, 2, 3].map(i => <HexOutline key={`hex-${i}`} seed={i} />)}
+        {Array.from({ length: crystalCount }).map((_, i) => <CrystalShard key={`crystal-${i}`} seed={i + 1} />)}
+        {Array.from({ length: diamondCount }).map((_, i) => <DiamondNode key={`diamond-${i}`} seed={i + 1} />)}
+        {Array.from({ length: hexCount }).map((_, i) => <HexOutline key={`hex-${i}`} seed={i + 1} />)}
       </div>
     </>
   )
 }
 
 export default GlobalAILayer
+
 

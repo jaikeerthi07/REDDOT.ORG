@@ -92,7 +92,7 @@ function App() {
         <MobileNav />
 
         {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
-        <section id="home" className="relative h-screen overflow-hidden bg-[#F5F4F0]">
+        <section id="home" className="relative h-screen overflow-hidden bg-[#F5F4F0]" style={{ contain: 'layout paint' }}>
           <video
             autoPlay
             loop
@@ -100,46 +100,47 @@ function App() {
             playsInline
             fetchPriority="high"
             poster="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2832&auto=format&fit=crop"
-            className="absolute inset-0 w-full h-full object-cover z-0"
+            className="absolute inset-0 w-full h-full object-cover z-0 will-change-transform"
             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
             style={{
               transform: videoReady ? "scale(1.05)" : "scale(0.85)",
               transition: "transform 2s cubic-bezier(0.16, 1, 0.3, 1)",
-              contain: 'layout paint'
             }}
           />
           <FloatingAIObjects section="hero" />
           <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "65%", background: "linear-gradient(to top, #F5F4F0 0%, #F5F4F0 18%, rgba(245,244,240,0.85) 35%, rgba(245,244,240,0.5) 55%, rgba(245,244,240,0.15) 75%, transparent 100%)" }} />
           <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "30%", background: "linear-gradient(to top, #F5F4F0 0%, transparent 100%)" }} />
           
-          <div className="relative z-30 flex flex-col justify-end h-full px-6 md:px-12 pb-12 max-w-4xl mx-auto">
+          <div className="relative z-30 flex flex-col justify-end h-full px-6 md:px-12 pb-20 md:pb-12 max-w-4xl mx-auto">
             <h1
-              className="text-6xl sm:text-7xl md:text-8xl font-light text-[#111] leading-[1.0] tracking-tight mb-10"
+              className="text-[2.75rem] xs:text-5xl sm:text-7xl md:text-8xl font-light text-[#111] leading-[1.05] md:leading-[1.0] tracking-tight mb-8 md:mb-10"
               style={{
                 opacity: heroReady ? 1 : 0,
                 filter: heroReady ? "none" : "blur(20px)",
                 transform: heroReady ? "translateY(0px)" : "translateY(20px)",
                 transition: "opacity 0.8s ease-out, filter 0.8s ease-out, transform 0.8s ease-out",
+                willChange: 'opacity, filter, transform'
               }}
             >
               The ultimate<br />orchestrator for<br /><span className="italic font-normal">AI Agents.</span>
             </h1>
-            <div className="flex flex-wrap gap-12 mt-4" style={{ opacity: heroReady ? 1 : 0, transition: "opacity 1s ease 400ms" }}>
+            <div className="flex flex-wrap gap-8 md:gap-12 mt-4" style={{ opacity: heroReady ? 1 : 0, transition: "opacity 1s ease 400ms" }}>
               <div>
-                <div className="text-3xl font-light"><Counter end={15} suffix="" /></div>
-                <div className="text-[10px] tracking-widest text-black/35 uppercase mt-1">Projects Delivered</div>
+                <div className="text-2xl md:text-3xl font-light"><Counter end={15} suffix="" /></div>
+                <div className="text-[9px] md:text-[10px] tracking-widest text-black/35 uppercase mt-1">Projects Delivered</div>
               </div>
               <div>
-                <div className="text-3xl font-light"><Counter end={98} suffix="%" /></div>
-                <div className="text-[10px] tracking-widest text-black/35 uppercase mt-1">Task Success Rate</div>
+                <div className="text-2xl md:text-3xl font-light"><Counter end={98} suffix="%" /></div>
+                <div className="text-[9px] md:text-[10px] tracking-widest text-black/35 uppercase mt-1">Task Success Rate</div>
               </div>
               <div>
-                <div className="text-3xl font-light"><Counter end={1.5} suffix="+" /></div>
-                <div className="text-[10px] tracking-widest text-black/35 uppercase mt-1">Years Experience</div>
+                <div className="text-2xl md:text-3xl font-light"><Counter end={1.5} suffix="+" /></div>
+                <div className="text-[9px] md:text-[10px] tracking-widest text-black/35 uppercase mt-1">Years Experience</div>
               </div>
             </div>
           </div>
         </section>
+
       </motion.div>
 
 

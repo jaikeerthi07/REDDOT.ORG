@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useMemo } from 'react'
 
 /**
- * Neural Network Canvas — optimized for performance.
- * - Reduced to 30 nodes (was 60) → O(n²) checks cut by 75%
- * - MAX_DIST reduced to 110 (was 140) → fewer connections drawn
- * - Removed per-node radial gradient → simple fill only
- * - Skips connection draw every other frame → 50% fewer draw calls
+ * Neural Network Canvas — highly optimized for performance.
+ * - Batched drawing: Uses opacity buckets to minimize stroke() calls (O(buckets) vs O(n²))
+ * - Fixed node count for predictable performance
+ * - Uses squared distance checks for speed
  */
 const NeuralCanvas = ({ nodeCount = 30, color = '#00f3ff' }) => {
   const canvasRef = useRef(null)
@@ -14,79 +13,77 @@ const NeuralCanvas = ({ nodeCount = 30, color = '#00f3ff' }) => {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
     }
     resize()
     window.addEventListener('resize', resize)
 
     // Create nodes
     const nodes = Array.from({ length: nodeCount }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      r: Math.random() * 2 + 1,
-      pulse: Math.random() * Math.PI * 2,
+      x: Math.random() * (canvas.width / window.devicePixelRatio),
+      y: Math.random() * (canvas.height / window.devicePixelRatio),
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
     }))
 
     const MAX_DIST = 110
-    let frame = 0
+    const MAX_DIST_SQ = MAX_DIST * MAX_DIST
+    
+    // Opacity buckets for batching
+    const BUCKETS = 5
+    const bucketPaths = Array.from({ length: BUCKETS }, () => new Path2D())
 
     const draw = () => {
-      frame++
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const w = canvas.width / window.devicePixelRatio
+      const h = canvas.height / window.devicePixelRatio
+      ctx.clearRect(0, 0, w, h)
 
       // Update node positions
       nodes.forEach(n => {
         n.x += n.vx
         n.y += n.vy
-        n.pulse += 0.025
 
-        if (n.x < 0) n.x = canvas.width
-        if (n.x > canvas.width) n.x = 0
-        if (n.y < 0) n.y = canvas.height
-        if (n.y > canvas.height) n.y = 0
+        if (n.x < 0) n.x = w
+        if (n.x > w) n.x = 0
+        if (n.y < 0) n.y = h
+        if (n.y > h) n.y = 0
       })
 
-      // Draw connections every other frame (halves draw-call load)
-      if (frame % 2 === 0) {
-        ctx.lineWidth = 0.6
-        for (let i = 0; i < nodes.length; i++) {
-          for (let j = i + 1; j < nodes.length; j++) {
-            const dx = nodes[i].x - nodes[j].x
-            const dy = nodes[i].y - nodes[j].y
-            // Use squared distance to avoid sqrt on every pair
-            const distSq = dx * dx + dy * dy
-            if (distSq < MAX_DIST * MAX_DIST) {
-              const dist = Math.sqrt(distSq)
-              const alpha = (1 - dist / MAX_DIST) * 0.3
-              ctx.beginPath()
-              ctx.strokeStyle = `rgba(0,210,255,${alpha.toFixed(2)})`
-              ctx.moveTo(nodes[i].x, nodes[i].y)
-              ctx.lineTo(nodes[j].x, nodes[j].y)
-              ctx.stroke()
-            }
+      // Reset buckets
+      bucketPaths.forEach(p => (p = new Path2D()))
+      const paths = Array.from({ length: BUCKETS }, () => new Path2D())
+
+      // Fill buckets
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x
+          const dy = nodes[i].y - nodes[j].y
+          const distSq = dx * dx + dy * dy
+          
+          if (distSq < MAX_DIST_SQ) {
+            const dist = Math.sqrt(distSq)
+            const alpha = (1 - dist / MAX_DIST)
+            const bucketIndex = Math.floor(alpha * (BUCKETS - 1))
+            
+            const path = paths[bucketIndex]
+            path.moveTo(nodes[i].x, nodes[i].y)
+            path.lineTo(nodes[j].x, nodes[j].y)
           }
         }
       }
 
-      // Draw nodes removed to eliminate neon dots effect
-      /*
-      nodes.forEach((n, i) => {
-        const pulse = Math.sin(n.pulse) * 0.5 + 0.5
-        const r = n.r + pulse * 1.2
-        ctx.beginPath()
-        ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = i % 7 === 0
-          ? `rgba(188,0,255,${(0.6 + pulse * 0.3).toFixed(2)})`
-          : `rgba(0,243,255,${(0.5 + pulse * 0.3).toFixed(2)})`
-        ctx.fill()
+      // Draw buckets
+      ctx.lineWidth = 0.8
+      paths.forEach((path, i) => {
+        const alpha = ((i + 1) / BUCKETS) * 0.25
+        ctx.strokeStyle = `rgba(0, 210, 255, ${alpha.toFixed(2)})`
+        ctx.stroke(path)
       })
-      */
 
       animRef.current = requestAnimationFrame(draw)
     }
@@ -97,15 +94,16 @@ const NeuralCanvas = ({ nodeCount = 30, color = '#00f3ff' }) => {
       cancelAnimationFrame(animRef.current)
       window.removeEventListener('resize', resize)
     }
-  }, [nodeCount, color])
+  }, [nodeCount])
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ opacity: 0.5 }}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ opacity: 0.4, contain: 'strict' }}
     />
   )
 }
 
 export default NeuralCanvas
+

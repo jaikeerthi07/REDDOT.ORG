@@ -4,15 +4,16 @@ import * as THREE from 'three'
 import { getProject } from '@theatre/core'
 import { SheetProvider, editable as e, PerspectiveCamera } from '@theatre/r3f'
 
+// Initialize theatre project only once
 const project = getProject('REDDOT_Parallax')
 
 const HeroObject = React.memo(({ theme }) => {
   const groupRef = useRef()
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.005
-      groupRef.current.rotation.z += 0.002
+      groupRef.current.rotation.y += delta * 0.2
+      groupRef.current.rotation.z += delta * 0.1
     }
   })
 
@@ -78,6 +79,7 @@ const Scene = ({ bgImage, theme, mouse, scrollProgress, isMobile }) => {
   const sheet = useMemo(() => project.sheet(`Theme_${theme}`), [theme])
 
   useEffect(() => {
+    if (!sheet) return
     sheet.project.ready.then(() => {
       sheet.sequence.position = scrollProgress * 5
     })
@@ -106,11 +108,7 @@ const Scene = ({ bgImage, theme, mouse, scrollProgress, isMobile }) => {
 
   return (
     <SheetProvider sheet={sheet}>
-      {!isMobile ? (
-        <PerspectiveCamera theatreKey="Camera" makeDefault position={[0, 0, 8]} fov={60} />
-      ) : (
-        <perspectiveCamera makeDefault position={[0, 0, 8]} fov={60} />
-      )}
+      <PerspectiveCamera theatreKey="Camera" makeDefault position={[0, 0, 8]} fov={isMobile ? 75 : 60} />
       
       <ambientLight intensity={0.4} />
       <pointLight position={[10, 10, 10]} intensity={1.5} />
@@ -119,13 +117,13 @@ const Scene = ({ bgImage, theme, mouse, scrollProgress, isMobile }) => {
         <>
           <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#00f3ff" />
           <HeroObject theme={theme} />
-          <Particles count={100} />
+          <Particles count={isMobile ? 20 : 100} />
         </>
       )}
       
       <e.mesh theatreKey="Background" ref={meshRef}>
         <planeGeometry args={[viewport.width * 2, viewport.height * 2]} />
-        <meshBasicMaterial map={texture} transparent opacity={isMobile ? 0.4 : 0.6} />
+        <meshBasicMaterial map={texture} transparent opacity={isMobile ? 0.3 : 0.5} />
       </e.mesh>
       
       {!isMobile && [...Array(4)].map((_, i) => (
@@ -164,7 +162,6 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
       const winH = window.innerHeight
-      // Use a more stable calculation that handles zero height
       const height = rect.height || winH
       const progress = Math.max(0, Math.min(1, (winH - rect.top) / (winH + height)))
       setScrollProgress(progress)
@@ -185,7 +182,7 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
         setIsInView(entry.isIntersecting)
         if (entry.isIntersecting) updateScroll()
       },
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '100px' }
     )
     
     if (containerRef.current) observer.observe(containerRef.current)
@@ -213,23 +210,29 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
       <div className="absolute inset-0 z-0 pointer-events-none">
         {isInView && (
           <Canvas 
-            gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }} 
+            gl={{ 
+              antialias: false, 
+              alpha: true, 
+              powerPreference: "high-performance",
+              stencil: false,
+              depth: true
+            }} 
             dpr={isMobile ? 1 : [1, 1.5]}
+            camera={{ position: [0, 0, 8], fov: 60 }}
           >
             <Scene bgImage={bgImage} theme={theme} mouse={mouse} scrollProgress={scrollProgress} isMobile={isMobile} />
           </Canvas>
         )}
       </div>
       
-      <div className="relative z-10 w-full h-full pointer-events-none">
-        <div className="pointer-events-auto">
-          {children}
-        </div>
+      <div className="relative z-10 w-full h-full">
+        {children}
       </div>
       
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black via-transparent to-black" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black via-transparent to-black opacity-80" />
     </div>
   )
 })
 
 export default ThreeDParallax
+
