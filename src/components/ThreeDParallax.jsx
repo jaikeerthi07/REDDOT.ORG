@@ -164,20 +164,27 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
       const winH = window.innerHeight
-      const progress = Math.max(0, Math.min(1, (winH - rect.top) / (winH + rect.height)))
+      // Use a more stable calculation that handles zero height
+      const height = rect.height || winH
+      const progress = Math.max(0, Math.min(1, (winH - rect.top) / (winH + height)))
       setScrollProgress(progress)
-      ticking.current = false
     }
 
     const handleScroll = () => {
       if (!ticking.current) {
-        requestAnimationFrame(updateScroll)
+        requestAnimationFrame(() => {
+          updateScroll()
+          ticking.current = false
+        })
         ticking.current = true
       }
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
+      ([entry]) => {
+        setIsInView(entry.isIntersecting)
+        if (entry.isIntersecting) updateScroll()
+      },
       { threshold: 0 }
     )
     

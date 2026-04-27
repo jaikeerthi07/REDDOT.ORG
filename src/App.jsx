@@ -154,15 +154,30 @@ function App() {
 
 
         {/* ── REAL REDDOT SERVICES ────────────────────────────────────────── */}
-        <Suspense fallback={<LoadingSection />}>
-          <Services />
-          <Projects />
-          <Products />
-          <About />
-          <Careers />
-          <Contact />
-          <Chatbot />
-        </Suspense>
+        {/* ── REAL REDDOT SERVICES ────────────────────────────────────────── */}
+        <div className="flex flex-col">
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <Services />
+          </Suspense>
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <Projects />
+          </Suspense>
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <Products />
+          </Suspense>
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <About />
+          </Suspense>
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <Careers />
+          </Suspense>
+          <Suspense fallback={<div className="h-screen bg-black" />}>
+            <Contact />
+          </Suspense>
+          <Suspense fallback={null}>
+            <Chatbot />
+          </Suspense>
+        </div>
 
         {/* ── FOOTER ───────────────────────────────────────────────────────── */}
         <footer className="py-20 px-6 border-t border-white/[0.05] bg-black text-center relative z-10">
