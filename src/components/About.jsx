@@ -26,7 +26,7 @@ const founders = [
     objectPosition: "object-top",
     scale: "scale-110",
     portfolio: "https://jd-arc.vercel.app/",
-    linkedin: "#"
+    linkedin: "https://www.linkedin.com/in/jagadish-k-583996351 "
   }
 ]
 
