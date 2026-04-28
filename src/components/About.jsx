@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Target, Eye, Linkedin, Twitter, Mail, ArrowRight } from 'lucide-react'
+import { Target, Eye, Linkedin, ArrowRight } from 'lucide-react'
 import { Tag } from './Tag'
 import { RevealText } from './RevealText'
 import { BentoCard } from './BentoCard'
@@ -15,7 +15,8 @@ const founders = [
     image: "/images/founder2.png",
     objectPosition: "object-center",
     scale: "scale-110",
-    portfolio: "https://ether-dream-recreate.vercel.app/"
+    portfolio: "https://ether-dream-recreate.vercel.app/",
+    linkedin: "https://www.linkedin.com/in/jaikeerthi-r-03931b341"
   },
   {
     name: "Jagadish K",
@@ -24,7 +25,8 @@ const founders = [
     image: "/images/founder1.jpg",
     objectPosition: "object-top",
     scale: "scale-110",
-    portfolio: "https://jd-arc.vercel.app/"
+    portfolio: "https://jd-arc.vercel.app/",
+    linkedin: "#"
   }
 ]
 
@@ -103,15 +105,14 @@ const About = () => {
                   </p>
 
                   <div className="mt-8 flex gap-4">
-                    {[Linkedin, Twitter, Mail].map((Icon, j) => (
-                      <a
-                        key={j}
-                        href="#"
-                        className="w-10 h-10 rounded-full border border-white/[0.07] flex items-center justify-center text-white/20 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all"
-                      >
-                        <Icon size={16} />
-                      </a>
-                    ))}
+                    <a
+                      href={founder.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full border border-white/[0.07] flex items-center justify-center text-white/20 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all"
+                    >
+                      <Linkedin size={16} />
+                    </a>
                   </div>
                 </BentoCard>
               ))}
