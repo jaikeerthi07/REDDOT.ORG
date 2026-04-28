@@ -113,7 +113,7 @@ const Products = () => {
                       />
 
                       {/* Mock Interface Content */}
-                      <div className="absolute inset-0 p-4 sm:p-8 flex flex-col gap-6 relative z-10">
+                      <div className="absolute inset-0 p-2 sm:p-4 flex flex-col gap-4 relative z-10">
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                           <div className="flex items-center gap-3">
@@ -132,105 +132,29 @@ const Products = () => {
                           </div>
                         </div>
 
-                        {/* Featured Poster & Activity */}
-                        <div className="grid grid-cols-12 gap-4">
+                        {/* Featured Poster - Now Full Width */}
+                        <div className="flex-1 flex flex-col gap-4 min-h-0">
                           <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.4 }}
-                            className="col-span-8 aspect-[4/3] bg-black/40 rounded-xl border border-white/[0.1] overflow-hidden relative group/poster shadow-lg"
+                            className="col-span-1 flex-1 bg-black/40 rounded-xl border border-white/[0.1] overflow-hidden relative group/poster shadow-lg"
                           >
                             <img
-                              src="/images/sem_poster.png"
+                              src="/images/sem poster.png"
                               alt="SEM Event Poster"
-                              className="w-full h-full object-cover opacity-80 group-hover/poster:opacity-100 group-hover/poster:scale-110 transition-all duration-700"
+                              className="w-full h-full object-contain opacity-100 group-hover/poster:scale-105 transition-all duration-700"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-                            <div className="absolute bottom-3 left-3 flex flex-col gap-1">
-                              <span className="text-[8px] font-mono tracking-widest text-white/40 uppercase">Featured Event</span>
-                              <span className="text-[10px] font-medium text-white/90">Global AI Summit 2026</span>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+                            <div className="absolute bottom-4 left-4 flex flex-col gap-1">
+                              <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase">Featured Interface</span>
+                              <span className="text-xs font-medium text-white">Student Event Management Platform</span>
                             </div>
                           </motion.div>
-
-                          <div className="col-span-4 flex flex-col gap-4">
-                            {[1, 2].map(i => (
-                              <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: 20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4, delay: 0.5 + (i * 0.1) }}
-                                className="flex-1 bg-white/[0.03] rounded-lg border border-white/[0.05] relative overflow-hidden"
-                              >
-                                <motion.div
-                                  className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"
-                                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                                  transition={{ duration: 2, repeat: Infinity, delay: i }}
-                                />
-                                <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                                  <div className="h-1 w-8 bg-white/20 rounded-full mb-1" />
-                                  <div className="h-1 w-12 bg-white/10 rounded-full" />
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
                         </div>
 
-                        {/* Main Panel */}
-                        <motion.div
-                          initial={{ y: 20, opacity: 0 }}
-                          whileInView={{ y: 0, opacity: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.6, delay: 0.8 }}
-                          className="flex-1 bg-white/10 border border-white/10 rounded-xl shadow-md p-6 relative overflow-hidden group"
-                        >
-                          <div className="flex items-start justify-between mb-8">
-                            <div>
-                              <motion.div
-                                className="h-3 bg-white/[0.1] rounded-full mb-3"
-                                initial={{ width: 0 }} whileInView={{ width: 160 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1 }}
-                              />
-                              <motion.div
-                                className="h-2 bg-white/[0.05] rounded-full"
-                                initial={{ width: 0 }} whileInView={{ width: 96 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 1.2 }}
-                              />
-                            </div>
-                            <motion.div
-                              animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                              className="w-10 h-10 rounded-full bg-white/[0.02] border border-white/[0.05] flex items-center justify-center border-t-white/20"
-                            />
-                          </div>
-
-                          {/* Animated List */}
-                          <div className="space-y-4">
-                            {[1, 2, 3, 4].map(i => (
-                              <div key={i} className="flex items-center gap-3">
-                                <motion.div
-                                  initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ type: "spring", delay: 1.2 + (i * 0.1) }}
-                                  className={`w-4 h-4 rounded border ${i < 3 ? 'border-green-500/30 bg-green-500/10' : 'border-white/[0.1]'} flex items-center justify-center`}
-                                >
-                                  {i < 3 && <CheckCircle size={10} className="text-green-500" />}
-                                </motion.div>
-                                <div className="h-2 rounded-full bg-white/[0.03] flex-1 overflow-hidden">
-                                  <motion.div
-                                    className="h-full bg-white/[0.15]"
-                                    initial={{ width: 0 }}
-                                    whileInView={{ width: `${Math.random() * 40 + 30}%` }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 1, delay: 1.4 + (i * 0.1), ease: "easeOut" }}
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Overlay Glow */}
-                          <motion.div
-                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                            style={{ background: "radial-gradient(circle at center, rgba(0,0,0,0.02) 0%, transparent 70%)" }}
-                          />
-                        </motion.div>
+                        {/* Main Panel removed to give more space to the poster */}
                       </div>
 
                       {/* Decorative floating blurred orb */}
