@@ -120,7 +120,7 @@ const About = () => {
               <BentoCard className="sm:col-span-2 p-10 flex flex-col md:flex-row items-center justify-between border-dashed bg-white/[0.01] border-white/[0.1] gap-8">
                 <div className="flex items-center gap-6">
                   <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-3">
-                    <img src="/reddot logo.png" alt="Logo" className="w-full h-full object-contain opacity-50 invert" />
+                    <img src="/reddot logo.png" alt="Logo" className="w-full h-full object-contain opacity-50 invert" loading="lazy" decoding="async" />
                   </div>
                   <div>
                     <p className="text-[10px] tracking-[0.4em] text-white/20 uppercase font-mono">ESTABLISHED 2024</p>

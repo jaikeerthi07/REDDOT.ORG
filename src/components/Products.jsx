@@ -45,7 +45,7 @@ const Products = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 mt-6 group/link cursor-pointer"
               >
-                <img src="/icon.svg" alt="SEM" className="w-12 h-12 md:w-16 md:h-16 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover/link:scale-110 transition-transform duration-300" />
+                <img src="/icon.svg" alt="SEM" className="w-12 h-12 md:w-16 md:h-16 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover/link:scale-110 transition-transform duration-300" loading="lazy" decoding="async" />
                 <RevealText className="text-4xl md:text-6xl font-light tracking-tight leading-[1.1] text-white">
                   SEM — Student <br /><span className="italic font-normal text-white/80 group-hover/link:text-white transition-colors duration-300">Event Management</span>
                 </RevealText>
@@ -117,7 +117,7 @@ const Products = () => {
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                           <div className="flex items-center gap-3">
-                            <img src="/icon.svg" alt="" className="w-5 h-5 opacity-80" />
+                            <img src="/icon.svg" alt="" className="w-5 h-5 opacity-80" loading="lazy" decoding="async" />
                             <motion.div
                               className="h-4 bg-white/[0.08] rounded-full"
                               initial={{ width: 0 }}
@@ -145,6 +145,8 @@ const Products = () => {
                               src="/images/sem poster.png"
                               alt="SEM Event Poster"
                               className="w-full h-full object-contain opacity-100 group-hover/poster:scale-105 transition-all duration-700"
+                              loading="lazy"
+                              decoding="async"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
                             <div className="absolute bottom-4 left-4 flex flex-col gap-1">

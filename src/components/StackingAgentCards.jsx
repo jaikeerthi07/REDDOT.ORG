@@ -50,12 +50,12 @@ export function StackingReddotCards() {
               <div className="group relative bg-[#faf9f7] rounded-2xl border border-black/[0.07] overflow-hidden cursor-pointer">
                 {reddot.img && (
                   <div className="relative w-full h-52 pointer-events-none md:hidden">
-                    <img src={reddot.img} alt={reddot.label} className="absolute inset-0 w-full h-full object-cover object-center" style={{ maskImage: "linear-gradient(to bottom, black 0%, black 35%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 35%, transparent 85%)" }} />
+                    <img src={reddot.img} alt={reddot.label} className="absolute inset-0 w-full h-full object-cover object-center" style={{ maskImage: "linear-gradient(to bottom, black 0%, black 35%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 35%, transparent 85%)" }} loading="lazy" decoding="async" />
                   </div>
                 )}
                 {reddot.img && (
                   <div className="hidden md:block absolute inset-y-0 right-0 w-1/2 pointer-events-none">
-                    <img src={reddot.img} alt={reddot.label} className="w-full h-full object-cover object-center" />
+                    <img src={reddot.img} alt={reddot.label} className="w-full h-full object-cover object-center" loading="lazy" decoding="async" />
                     <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #faf9f7 0%, transparent 55%)" }} />
                   </div>
                 )}
