@@ -15,14 +15,20 @@ function useInView(threshold = 0.1) {
 
 export const BentoCard = React.memo(({ children, className = "", delay = 0, ...props }) => {
   const { ref, inView } = useInView(0.1)
+  const rectRef = useRef(null)
+  const handleMouseEnter = (e) => {
+    rectRef.current = e.currentTarget.getBoundingClientRect()
+  }
   const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
+    if (!rectRef.current) return
+    const rect = rectRef.current
     e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`)
     e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`)
   }
   return (
     <div
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       {...props}
       className={`group relative rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-all duration-700 ${className}`}

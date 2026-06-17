@@ -22,9 +22,17 @@ export function ProjectCard({ project, isActive, dragOffset, index, currentIndex
   const contentX = useTransform(mouseXSpring, [-0.5, 0.5], ["5px", "-5px"])
   const contentY = useTransform(mouseYSpring, [-0.5, 0.5], ["5px", "-5px"])
 
+  const rectRef = useRef(null)
+
+  const handleMouseEnter = () => {
+    if (ref.current) {
+      rectRef.current = ref.current.getBoundingClientRect()
+    }
+  }
+
   const handleMouseMove = (e) => {
-    if (!isActive || !ref.current) return
-    const rect = ref.current.getBoundingClientRect()
+    if (!isActive || !rectRef.current) return
+    const rect = rectRef.current
     const width = rect.width
     const height = rect.height
     const mouseX = e.clientX - rect.left
@@ -43,6 +51,7 @@ export function ProjectCard({ project, isActive, dragOffset, index, currentIndex
   return (
     <motion.div
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="relative shrink-0 w-[320px] md:w-[450px] aspect-[4/5] rounded-[32px] overflow-hidden bg-black/5 cursor-pointer"

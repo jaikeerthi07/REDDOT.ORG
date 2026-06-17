@@ -165,10 +165,19 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
     
     const updateScroll = () => {
       if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
+      // Use cached dimensions to avoid forced layout reflows during scroll
+      if (!containerRef.current._cachedTop) {
+        const rect = containerRef.current.getBoundingClientRect()
+        containerRef.current._cachedTop = rect.top + window.scrollY
+        containerRef.current._cachedHeight = rect.height
+      }
+      
       const winH = window.innerHeight
-      const height = rect.height || winH
-      const progress = Math.max(0, Math.min(1, (winH - rect.top) / (winH + height)))
+      const currentScrollTop = window.scrollY
+      const elTop = containerRef.current._cachedTop - currentScrollTop
+      const height = containerRef.current._cachedHeight || winH
+      
+      const progress = Math.max(0, Math.min(1, (winH - elTop) / (winH + height)))
       scrollProgressRef.current = progress
     }
 
