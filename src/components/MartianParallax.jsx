@@ -1,20 +1,35 @@
 import React, { useState, useEffect, useRef } from "react"
 
 export const MartianParallax = ({ children }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isInView, setIsInView] = useState(false)
   const containerRef = useRef(null)
-  const lastUpdateRef = useRef(0)
-
+  const lastUpdateRef = useRef(false)
   const [isMobile, setIsMobile] = useState(false)
+
+  // Direct DOM references to bypass React re-render cycles on mouse move
+  const layer1Ref = useRef(null)
+  const starshipRef = useRef(null)
+  const layer2Ref = useRef(null)
+  const textRef = useRef(null)
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024 || 'ontouchstart' in window)
+      const mobile = window.innerWidth < 1024 || 'ontouchstart' in window
+      setIsMobile(mobile)
+      
+      // Reset transforms when going to mobile
+      if (mobile) {
+        if (layer1Ref.current) layer1Ref.current.style.transform = 'none'
+        if (starshipRef.current) starshipRef.current.style.transform = 'scale(0.5)'
+        if (layer2Ref.current) layer2Ref.current.style.transform = 'none'
+        if (textRef.current) textRef.current.style.transform = 'none'
+      } else {
+        if (starshipRef.current) starshipRef.current.style.transform = 'scale(0.75)'
+      }
     }
     checkMobile()
-    window.addEventListener('resize', checkMobile)
+    window.addEventListener('resize', checkMobile, { passive: true })
     
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry.isIntersecting),
@@ -28,7 +43,20 @@ export const MartianParallax = ({ children }) => {
       requestAnimationFrame(() => {
         const x = (e.clientX - window.innerWidth / 2) / window.innerWidth
         const y = (e.clientY - window.innerHeight / 2) / window.innerHeight
-        setMousePosition({ x, y })
+        
+        if (layer1Ref.current) {
+          layer1Ref.current.style.transform = `translate3d(${x * 30}px, ${y * 30}px, 0)`
+        }
+        if (starshipRef.current) {
+          starshipRef.current.style.transform = `translate3d(${x * 50}px, ${y * 50}px, 0) scale(0.75)`
+        }
+        if (layer2Ref.current) {
+          layer2Ref.current.style.transform = `translate3d(${x * 60}px, ${y * 60}px, 0)`
+        }
+        if (textRef.current) {
+          textRef.current.style.transform = `translate3d(${x * 90}px, ${y * 90}px, 0)`
+        }
+        
         lastUpdateRef.current = false
       })
     }
@@ -53,9 +81,10 @@ export const MartianParallax = ({ children }) => {
     >
       {/* Layer 1: Mars Background */}
       <div
+        ref={layer1Ref}
         className={`absolute inset-0 ${shouldAnimate ? "zoom-layer-1" : ""}`}
         style={{
-          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 30}px, ${mousePosition.y * 30}px, 0)`,
+          transform: 'none',
           willChange: isMobile ? 'auto' : "transform",
           width: "130%",
           height: "130%",
@@ -68,9 +97,10 @@ export const MartianParallax = ({ children }) => {
 
       {/* Layer: Starship */}
       <div
+        ref={starshipRef}
         className={`absolute z-5 ${shouldAnimate ? "zoom-layer-starship" : ""}`}
         style={{
-          transform: isMobile ? 'scale(0.5)' : `translate3d(${mousePosition.x * 50}px, ${mousePosition.y * 50}px, 0) scale(0.75)`,
+          transform: isMobile ? 'scale(0.5)' : 'scale(0.75)',
           willChange: isMobile ? 'auto' : "transform",
           width: isMobile ? "300px" : "800px",
           height: isMobile ? "300px" : "800px",
@@ -84,9 +114,10 @@ export const MartianParallax = ({ children }) => {
 
       {/* Layer 2: Middle Ground */}
       <div
+        ref={layer2Ref}
         className={`absolute inset-0 z-10 ${shouldAnimate ? "zoom-layer-2" : ""}`}
         style={{
-          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 60}px, ${mousePosition.y * 60}px, 0)`,
+          transform: 'none',
           willChange: isMobile ? 'auto' : "transform",
           width: "130%",
           height: "130%",
@@ -99,9 +130,10 @@ export const MartianParallax = ({ children }) => {
 
       {/* Main Text: REDDOT SERVICES */}
       <div
+        ref={textRef}
         className={`absolute inset-0 flex items-center justify-center z-10 px-6 ${shouldAnimate ? "zoom-layer-text" : ""}`}
         style={{
-          transform: isMobile ? 'none' : `translate3d(${mousePosition.x * 90}px, ${mousePosition.y * 90}px, 0)`,
+          transform: 'none',
           willChange: isMobile ? 'auto' : "transform",
           perspective: "1000px",
         }}
@@ -148,4 +180,3 @@ export const MartianParallax = ({ children }) => {
     </div>
   )
 }
-

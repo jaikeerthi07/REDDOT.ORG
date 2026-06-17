@@ -40,7 +40,7 @@ Founders:
 Contact:
 - Email: careers@reddot.com, contact@reddot.com
 - Phone: +91 98765 43210
-- Location: IIT Madras Research Park, Chennai
+- Location: Chennai, India
 
 Careers:
 - AI/ML Engineer
@@ -81,16 +81,47 @@ const Chatbot = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const text = userMsg.toLowerCase()
-        if (text.includes('book') || text.includes('appointment') || text.includes('demo')) {
+        const lastBotMessage = history.length > 1 ? history[history.length - 1].content.toLowerCase() : ''
+        
+        // Handle conversational continuity (e.g., answering "yes" to booking a demo)
+        if ((text === 'yes' || text === 'sure' || text === 'yeah' || text.includes('please') || text === 'yep') && 
+            (lastBotMessage.includes('book a demo') || lastBotMessage.includes('see our systems') || lastBotMessage.includes('schedule an online meeting') || lastBotMessage.includes('book a consultation'))) {
+          return resolve("Great! Please provide your Name, Email, and Preferred Time for the demo/consultation.")
+        }
+        
+        if ((text === 'yes' || text === 'sure' || text === 'yeah' || text.includes('please') || text === 'yep') && lastBotMessage.includes('share your email')) {
+          return resolve("Awesome! Please type your email address below, and our team will get back to you.")
+        }
+
+        if (text.includes('book') || text.includes('appointment') || text.includes('demo') || text.includes('schedule')) {
           resolve("I'd be happy to help you book a demo or appointment! Could you please provide your Name, Email, and Preferred Time?")
-        } else if (text.includes('founder') || text.includes('who started')) {
+        } else if (text.includes('founder') || text.includes('who started') || text.includes('owner') || text.includes('ceo')) {
           resolve("REDDOT was founded by Jaikeerthi R (specializing in Agentic & Gen AI) and Jagadish K (VLSI & Hardware-Software Integration). Would you like to learn more about their work?")
-        } else if (text.includes('career') || text.includes('job') || text.includes('internship')) {
+        } else if (text.includes('career') || text.includes('job') || text.includes('internship') || text.includes('hiring') || text.includes('work')) {
           resolve("We have several openings for AI/ML Engineers, Full Stack Developers, and more. We also offer internships! You can reach us at careers@reddot.com. Would you like to share your email so we can reach out?")
-        } else if (text.includes('product') || text.includes('jarvis')) {
-          resolve("Our products include Jarvis AI Assistant, Universal Web Scraper, and AI Travel Planner among others. Which one interests you most?")
+        } else if (text.includes('product') || text.includes('jarvis') || text.includes('scraper') || text.includes('wearable')) {
+          resolve("Our core products include the Jarvis AI Assistant, Universal Web Scraper, AI Travel Planner, and Medical Emergency Wearables. Which one interests you most?")
+        } else if (text.includes('service') || text.includes('what do you do') || text.includes('offer')) {
+          resolve("We offer services in AI Agents & Automation, Generative AI, Machine Learning, Data Science, Embedded Systems, and Web/Mobile Development. Is there a specific area you need help with?")
+        } else if (text.includes('contact') || text.includes('email') || text.includes('phone') || text.includes('call') || text.includes('reach')) {
+          resolve("You can reach us via email at contact@reddot.com or call us at +91 98765 43210. Our office is located in Chennai, India. How can we assist you today?")
+        } else if (text.includes('location') || text.includes('address') || text.includes('where are you')) {
+          resolve("We are located in Chennai, India. Would you like to schedule an online meeting or a demo of our products?")
+        } else if (text.includes('price') || text.includes('cost') || text.includes('fee')) {
+          resolve("Our pricing depends on the scope of the project and the specific AI solutions required. Would you like to book a consultation to discuss your needs and get a quote?")
+        } else if (text === 'hi' || text === 'hello' || text === 'hey' || text === 'hi there') {
+          resolve("Hello there! How can I help you today? You can ask me about our services, products, careers, or booking a demo.")
+        } else if (text === 'no' || text === 'nope' || text === 'not now') {
+          resolve("No problem! If you have any other questions about our AI systems or services, feel free to ask.")
         } else {
-          resolve("REDDOT specializes in AI Agents, Automation, and GenAI. We are located at IIT Madras Research Park. Would you like to book a demo to see our systems in action?")
+          // Dynamic fallback to prevent repeating the same generic answer
+          const fallbacks = [
+            "I'm still learning! You can ask me about our AI services, founders, careers, or how to contact us.",
+            "I might not have the answer to that just yet. Could you rephrase your question or ask about our AI Agents and services?",
+            "That's an interesting question! While I look into that, would you like to know about our latest AI Agent products?",
+            "If you need specific details, you can always email us at contact@reddot.com. In the meantime, is there anything else regarding REDDOT I can help with?"
+          ];
+          resolve(fallbacks[Math.floor(Math.random() * fallbacks.length)]);
         }
       }, 1000)
     })

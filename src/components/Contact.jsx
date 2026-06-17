@@ -1,34 +1,61 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Phone, MapPin, Linkedin, Twitter, Send, Globe, MessageCircle, CheckCircle2 } from 'lucide-react'
+import { Mail, Phone, MapPin, Linkedin, Twitter, Send, Globe, MessageCircle, CheckCircle2, ChevronDown } from 'lucide-react'
 import { Tag } from './Tag'
 import { RevealText } from './RevealText'
 import { BentoCard } from './BentoCard'
 import FloatingAIObjects from './FloatingAIObjects'
 
 import ThreeDParallax from './ThreeDParallax'
+import { GOOGLE_FORM_CONFIG } from '../lib/form-config'
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: '', message: '' })
   const [status, setStatus] = useState('idle') // idle, submitting, success
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('submitting')
 
-    // Simulate API call and storage
-    setTimeout(() => {
-      // Logic: Save to localStorage (can be exported to CSV)
+    // Local logging/fallback logic
+    const localSubmit = () => {
       const enquiries = JSON.parse(localStorage.getItem('reddot_enquiries') || '[]')
       enquiries.push({ ...formData, date: new Date().toISOString() })
       localStorage.setItem('reddot_enquiries', JSON.stringify(enquiries))
+    }
+
+    try {
+      localSubmit()
+
+      if (GOOGLE_FORM_CONFIG.submitUrl) {
+        const formPayload = new FormData()
+        formPayload.append(GOOGLE_FORM_CONFIG.fields.name, formData.name)
+        formPayload.append(GOOGLE_FORM_CONFIG.fields.email, formData.email)
+        formPayload.append(GOOGLE_FORM_CONFIG.fields.phone, formData.phone)
+        formPayload.append(GOOGLE_FORM_CONFIG.fields.service, formData.service)
+        formPayload.append(GOOGLE_FORM_CONFIG.fields.message, formData.message)
+
+        await fetch(GOOGLE_FORM_CONFIG.submitUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formPayload
+        })
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      }
 
       setStatus('success')
-      setFormData({ name: '', email: '', message: '' })
+      setFormData({ name: '', email: '', phone: '', service: '', message: '' })
       
       // Reset success message after 5 seconds
       setTimeout(() => setStatus('idle'), 5000)
-    }, 1500)
+    } catch (err) {
+      console.error('Submission error:', err)
+      // Fallback: assume success for UX since no-cors requests can fail to read response
+      setStatus('success')
+      setFormData({ name: '', email: '', phone: '', service: '', message: '' })
+      setTimeout(() => setStatus('idle'), 5000)
+    }
   }
 
   const openWhatsApp = () => {
@@ -159,12 +186,53 @@ const Contact = () => {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 relative group/input">
+                      <label className="text-[10px] tracking-widest text-white/40 uppercase font-mono ml-1 transition-colors group-focus-within/input:text-white">Phone Number</label>
+                      <div className="relative">
+                        <input
+                          required
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          placeholder="+1 (555) 000-0000"
+                          className="w-full bg-white/[0.02] border-b-2 border-transparent rounded-t-xl px-5 py-4 focus:outline-none focus:bg-white/[0.04] transition-all text-sm relative z-10 peer text-white"
+                        />
+                        <div className="absolute bottom-0 left-0 h-[2px] bg-white w-0 peer-focus:w-full transition-all duration-300 ease-out z-20" />
+                      </div>
+                    </div>
+                    <div className="space-y-2 relative group/input">
+                      <label className="text-[10px] tracking-widest text-white/40 uppercase font-mono ml-1 transition-colors group-focus-within/input:text-white">Service of Interest</label>
+                      <div className="relative flex items-center">
+                        <select
+                          required
+                          value={formData.service}
+                          onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                          className="w-full bg-white/[0.02] border-b-2 border-transparent rounded-t-xl px-5 py-4 focus:outline-none focus:bg-white/[0.04] transition-all text-sm relative z-10 peer text-white appearance-none cursor-pointer pr-10"
+                        >
+                          <option value="" className="bg-black text-white/40">Select a service...</option>
+                          <option value="REDDOT & Automation" className="bg-black text-white">REDDOT & Automation</option>
+                          <option value="SaaS Application Development" className="bg-black text-white">SaaS Application Development</option>
+                          <option value="Website & Mobile App Development" className="bg-black text-white">Website & Mobile App Development</option>
+                          <option value="Generative AI" className="bg-black text-white">Generative AI</option>
+                          <option value="Machine Learning & Deep Learning" className="bg-black text-white">Machine Learning & Deep Learning</option>
+                          <option value="Data Science & Data Analysis" className="bg-black text-white">Data Science & Data Analysis</option>
+                          <option value="Embedded Systems & IoT" className="bg-black text-white">Embedded Systems & IoT</option>
+                          <option value="Internship Program" className="bg-black text-white">Internship Program</option>
+                          <option value="Other / General Enquiry" className="bg-black text-white">Other / General Enquiry</option>
+                        </select>
+                        <ChevronDown size={16} className="absolute right-4 text-white/40 pointer-events-none z-20 transition-transform duration-300 peer-focus:rotate-180 peer-focus:text-white" />
+                        <div className="absolute bottom-0 left-0 h-[2px] bg-white w-0 peer-focus:w-full transition-all duration-300 ease-out z-20" />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-2 relative group/input">
                     <label className="text-[10px] tracking-widest text-white/40 uppercase font-mono ml-1 transition-colors group-focus-within/input:text-white">Message</label>
                     <div className="relative">
                       <textarea
                         required
-                        rows="5"
+                        rows="4"
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Tell us about your project..."

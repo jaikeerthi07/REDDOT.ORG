@@ -74,28 +74,56 @@ const Scene = ({ mouse, isMobile }) => {
 }
 
 const StarfieldBackground = ({ children }) => {
+  const containerRef = useRef(null)
+  const [isInView, setIsInView] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const mouse = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    window.addEventListener('resize', checkMobile, { passive: true })
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting)
+    }, { threshold: 0, rootMargin: '100px' })
+
+    if (containerRef.current) observer.observe(containerRef.current)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', checkMobile)
+    }
   }, [])
 
   const handleMouseMove = (e) => {
-    if (isMobile) return
+    if (isMobile || !isInView) return
     mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
     mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1
   }
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden bg-black" onMouseMove={handleMouseMove}>
+    <div 
+      ref={containerRef}
+      className="relative w-full min-h-screen overflow-hidden bg-black" 
+      onMouseMove={handleMouseMove}
+    >
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <Scene mouse={mouse} isMobile={isMobile} />
-        </Canvas>
+        {isInView && (
+          <Canvas 
+            gl={{ 
+              antialias: false,
+              alpha: true,
+              powerPreference: "high-performance",
+              stencil: false,
+              depth: false
+            }}
+            dpr={isMobile ? 1 : [1, 1.5]}
+            camera={{ position: [0, 0, 5], fov: 75 }}
+          >
+            <Scene mouse={mouse} isMobile={isMobile} />
+          </Canvas>
+        )}
       </div>
       <div className="relative z-10 w-full h-full pointer-events-none">
         <div className="pointer-events-auto">

@@ -96,9 +96,15 @@ export function ProjectCard({ project, isActive, dragOffset, index, currentIndex
             <h3 className="text-3xl font-light tracking-tight mb-2">{project.title}</h3>
             <p className="text-sm text-white/60 line-clamp-2 mb-6 font-light">{project.description}</p>
             
-            <button className="flex items-center gap-2 text-[10px] tracking-widest text-white/40 hover:text-white transition-colors uppercase font-mono font-bold">
-              View Project <ExternalLink size={10} />
-            </button>
+            {project.repo ? (
+              <a href={project.repo} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] tracking-widest text-white/40 hover:text-white transition-colors uppercase font-mono font-bold">
+                View GitHub <ExternalLink size={10} />
+              </a>
+            ) : (
+              <button className="flex items-center gap-2 text-[10px] tracking-widest text-white/40 hover:text-white transition-colors uppercase font-mono font-bold">
+                View Project <ExternalLink size={10} />
+              </button>
+            )}
           </motion.div>
         </div>
       </div>

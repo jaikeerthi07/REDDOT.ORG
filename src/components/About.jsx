@@ -15,7 +15,7 @@ const founders = [
     image: "/images/founder2.png",
     objectPosition: "object-center",
     scale: "scale-110",
-    portfolio: "https://ether-dream-recreate.vercel.app/",
+    portfolio: "https://jai-portfolio-rosy.vercel.app/",
     linkedin: "https://www.linkedin.com/in/jaikeerthi-r-03931b341"
   },
   {

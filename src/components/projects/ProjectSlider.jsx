@@ -10,11 +10,11 @@ import { useColorExtraction, useCurrentColors } from "../../hooks/useColorExtrac
 
 const projects = [
   { id: 1, title: "Jarvis AI", description: "A sophisticated personal AI assistant capable of managing schedules, controlling smart homes, and performing complex web research.", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80", tag: "AI AGENTS" },
-  { id: 2, title: "Universal Scraper", description: "An autonomous agent that can navigate any website, extract structured data, and handle dynamic content using LLM parsing.", image: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&q=80", tag: "AUTOMATION" },
+  { id: 2, title: "Universal Scraper", description: "An autonomous agent that can navigate any website, extract structured data, and handle dynamic content using LLM parsing.", image: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&q=80", tag: "AUTOMATION", repo: "https://github.com/jaikeerthi07/web-scraping.git" },
   { id: 3, title: "AI Travel Planner", description: "Personalized itinerary generation based on user preferences, real-time flight data, and social media trends.", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80", tag: "MOBILE APP" },
-  { id: 4, title: "Dynamic Spectrum", description: "An ML-driven system for optimizing wireless communication bandwidth in real-time for industrial IoT environments.", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80", tag: "EMBEDDED" },
+  { id: 4, title: "Dynamic Spectrum", description: "An ML-driven system for optimizing wireless communication bandwidth in real-time for industrial IoT environments.", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80", tag: "EMBEDDED", repo: "https://github.com/jaikeerthi07/dynamic-spectrum-allocation.git" },
   { id: 5, title: "Customized LLM", description: "Domain-specific Large Language Models fine-tuned on proprietary corporate data for secure internal knowledge management.", image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80", tag: "GEN AI" },
-  { id: 6, title: "Silent Emergency", description: "A wearable embedded system for hospitals that detects emergencies silently and alerts staff instantly.", image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80", tag: "IOT" }
+  { id: 6, title: "Fake Review Detection", description: "An AI-powered NLP system that analyzes text patterns, sentiment, and metadata to identify and filter fraudulent product reviews.", image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80", tag: "MACHINE LEARNING", repo: "https://github.com/jaikeerthi07/fake-review-detection.git" }
 ]
 
 export function ProjectSlider() {

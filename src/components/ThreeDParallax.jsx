@@ -71,21 +71,26 @@ const Particles = React.memo(({ count = 50 }) => {
   )
 })
 
-const Scene = ({ bgImage, theme, mouse, scrollProgress, isMobile }) => {
+const Scene = ({ bgImage, theme, mouse, scrollProgressRef, isMobile }) => {
   const { viewport } = useThree()
   const texture = useLoader(THREE.TextureLoader, bgImage)
   const meshRef = useRef()
   const nodesRef = useRef([])
   const sheet = useMemo(() => project.sheet(`Theme_${theme}`), [theme])
+  const isReady = useRef(false)
 
   useEffect(() => {
     if (!sheet) return
     sheet.project.ready.then(() => {
-      sheet.sequence.position = scrollProgress * 5
+      isReady.current = true
     })
-  }, [scrollProgress, sheet])
+  }, [sheet])
 
   useFrame((state, delta) => {
+    if (sheet && sheet.sequence && isReady.current) {
+      sheet.sequence.position = scrollProgressRef.current * 5
+    }
+
     if (isMobile) return
     
     const x = (mouse.current.x * viewport.width) / 2
@@ -148,9 +153,9 @@ const Scene = ({ bgImage, theme, mouse, scrollProgress, isMobile }) => {
 const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
   const containerRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const mouse = useRef({ x: 0, y: 0 })
+  const scrollProgressRef = useRef(0)
   const ticking = useRef(false)
 
   useEffect(() => {
@@ -164,7 +169,7 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
       const winH = window.innerHeight
       const height = rect.height || winH
       const progress = Math.max(0, Math.min(1, (winH - rect.top) / (winH + height)))
-      setScrollProgress(progress)
+      scrollProgressRef.current = progress
     }
 
     const handleScroll = () => {
@@ -220,7 +225,7 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
             dpr={isMobile ? 1 : [1, 1.5]}
             camera={{ position: [0, 0, 8], fov: 60 }}
           >
-            <Scene bgImage={bgImage} theme={theme} mouse={mouse} scrollProgress={scrollProgress} isMobile={isMobile} />
+            <Scene bgImage={bgImage} theme={theme} mouse={mouse} scrollProgressRef={scrollProgressRef} isMobile={isMobile} />
           </Canvas>
         )}
       </div>
@@ -235,4 +240,3 @@ const ThreeDParallax = React.memo(({ bgImage, theme, children }) => {
 })
 
 export default ThreeDParallax
-
