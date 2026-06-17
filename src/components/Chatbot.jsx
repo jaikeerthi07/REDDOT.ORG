@@ -177,7 +177,7 @@ const Chatbot = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white transition-colors">
+              <button onClick={() => setIsOpen(false)} aria-label="Close Chatbot" className="text-white/40 hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -217,6 +217,7 @@ const Chatbot = () => {
                 />
                 <button 
                   type="submit" 
+                  aria-label="Send Message"
                   disabled={!input.trim() || isLoading}
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-black text-white rounded-lg hover:bg-black/80 disabled:opacity-30 transition-all"
                 >
@@ -233,6 +234,7 @@ const Chatbot = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Chatbot"
         className="w-14 h-14 bg-black rounded-full shadow-2xl flex items-center justify-center text-white relative group overflow-hidden"
       >
         <AnimatePresence mode="wait">
